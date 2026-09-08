@@ -1,4 +1,4 @@
-import { Routes, Route, Link } from 'react-router-dom'
+import { Routes, Route, Link, useLocation } from 'react-router-dom'
 import ProductList from './components/ProductList'
 import CartOverlay from './components/CartOverlay'
 import AdminOrders from './components/AdminOrders'
@@ -9,30 +9,32 @@ import Register from './components/Register'
 import Profile from './components/Profile'
 import Success from './components/Success'
 import Cancel from './components/Cancel'
+import OAuth2RedirectHandler from './components/OAuth2RedirectHandler'
+import AdminRoute from './components/AdminRoute'
 import { useCart } from './context/CartContext'
 import { useAuth } from './context/AuthContext'
-import { User } from 'lucide-react'
+import UserMenu from './components/UserMenu'
 
 function App() {
   const { getCartCount, toggleCart } = useCart();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  
+  const location = useLocation();
+  const hideNavbarRoutes = ['/login', '/register'];
+  const shouldShowNavbar = !hideNavbarRoutes.includes(location.pathname);
   
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm sticky top-0 z-10">
+      {shouldShowNavbar && (
+        <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <Link to="/" className="text-2xl font-bold text-gray-900 tracking-tight">B2B/B2C Commerce</Link>
           <div className="flex items-center gap-6">
-            <Link to="/admin/orders" className="text-sm font-medium text-gray-600 hover:text-gray-900">Admin</Link>
-            
-            {user ? (
-              <Link to="/profile" className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 bg-blue-50 px-3 py-1.5 rounded-full">
-                <User className="w-4 h-4" />
-                {user.name.split(' ')[0]}
-              </Link>
-            ) : (
-              <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900">Login</Link>
+            {user?.role === 'ADMIN' && (
+              <Link to="/admin/orders" className="text-sm font-medium text-gray-600 hover:text-gray-900">Admin</Link>
             )}
+            
+            <UserMenu />
 
             <div className="relative">
               {getCartCount() > 0 && (
@@ -52,6 +54,7 @@ function App() {
           </div>
         </div>
       </header>
+      )}
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Routes>
@@ -59,11 +62,12 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/admin/orders" element={<AdminOrders />} />
-          <Route path="/admin/coupons" element={<AdminCoupons />} />
-          <Route path="/admin/inventory" element={<AdminInventory />} />
+          <Route path="/admin/orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />
+          <Route path="/admin/coupons" element={<AdminRoute><AdminCoupons /></AdminRoute>} />
+          <Route path="/admin/inventory" element={<AdminRoute><AdminInventory /></AdminRoute>} />
           <Route path="/success" element={<Success />} />
           <Route path="/cancel" element={<Cancel />} />
+          <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
         </Routes>
       </main>
       

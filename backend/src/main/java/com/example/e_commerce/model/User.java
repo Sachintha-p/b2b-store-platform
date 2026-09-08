@@ -15,6 +15,14 @@ public class User {
         RETAIL, WHOLESALE
     }
 
+    public enum AuthProvider {
+        LOCAL, GOOGLE
+    }
+    
+    public enum Role {
+        USER, ADMIN
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,12 +35,21 @@ public class User {
     @Column(unique = true)
     private String email;
 
-    @NotBlank(message = "Password is required")
     @JsonIgnore
-    private String passwordHash;
+    private String passwordHash; // Nullable for OAuth2 users
 
     private String shippingAddress;
 
     @Enumerated(EnumType.STRING)
     private CustomerGroup customerGroup = CustomerGroup.RETAIL;
+
+    @Enumerated(EnumType.STRING)
+    private AuthProvider provider = AuthProvider.LOCAL;
+
+    private String providerId;
+    
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;
+    
+    private java.time.LocalDateTime createdAt = java.time.LocalDateTime.now();
 }

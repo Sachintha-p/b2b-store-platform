@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
-import { Package, User as UserIcon } from 'lucide-react';
+import { Package, User as UserIcon, Shield, Mail, Tag, LogOut } from 'lucide-react';
 
 const Profile = () => {
   const { user, logout, token } = useAuth();
@@ -32,7 +32,7 @@ const Profile = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    navigate('/login');
   };
 
   if (!user) return null;
@@ -40,6 +40,7 @@ const Profile = () => {
   return (
     <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
       <div className="md:col-span-1 space-y-6">
+        {/* User Info Card */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center">
@@ -51,16 +52,31 @@ const Profile = () => {
             </div>
           </div>
           
-          <div className="mb-6">
-            <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${user.customerGroup === 'WHOLESALE' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'}`}>
-              {user.customerGroup} CUSTOMER
-            </span>
+          {/* Profile Details */}
+          <div className="space-y-3 mb-6">
+            <div className="flex items-center gap-3 text-sm">
+              <Mail className="w-4 h-4 text-gray-400" />
+              <span className="text-gray-600">{user.email}</span>
+            </div>
+            <div className="flex items-center gap-3 text-sm">
+              <Tag className="w-4 h-4 text-gray-400" />
+              <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold ${user.customerGroup === 'WHOLESALE' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'}`}>
+                {user.customerGroup} CUSTOMER
+              </span>
+            </div>
+            <div className="flex items-center gap-3 text-sm">
+              <Shield className="w-4 h-4 text-gray-400" />
+              <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold ${user.provider === 'GOOGLE' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`}>
+                {user.provider === 'GOOGLE' ? '🔗 Google Account' : '🔑 Email & Password'}
+              </span>
+            </div>
           </div>
           
           <button 
             onClick={handleLogout}
-            className="w-full text-center py-2.5 px-4 border border-red-200 text-red-600 rounded-xl hover:bg-red-50 transition-colors font-medium"
+            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 border border-red-200 text-red-600 rounded-xl hover:bg-red-50 transition-colors font-medium"
           >
+            <LogOut className="w-4 h-4" />
             Sign Out
           </button>
         </div>

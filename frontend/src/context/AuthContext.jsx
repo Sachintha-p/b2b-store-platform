@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../api';
 
 const AuthContext = createContext();
@@ -8,8 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token') || null);
   const [loading, setLoading] = useState(false);
 
-  // When the app loads or token changes, we could optionally verify it here, 
-  // but for now we'll just parse the local state.
+  // When the app loads or token changes, restore user from localStorage
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser && token) {
@@ -41,6 +40,24 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Called by OAuth2RedirectHandler to log in with a JWT received from the backend
+  const loginWithToken = useCallback(async (jwtToken) => {
+    localStorage.setItem('token', jwtToken);
+    setToken(jwtToken);
+    
+    // Fetch user profile from backend using the token
+    try {
+      const response = await api.get('/auth/me', {
+        headers: { Authorization: `Bearer ${jwtToken}` }
+      });
+      const userData = response.data;
+      localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
+    } catch (error) {
+      console.error('Failed to fetch user profile after OAuth login', error);
+    }
+  }, []);
+
   const register = async (name, email, password) => {
     setLoading(true);
     try {
@@ -67,10 +84,11 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('user');
     setToken(null);
     setUser(null);
+    window.location.href = '/login';
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, loginWithToken, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -66,6 +66,54 @@ public class OrderController {
             }
         }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
     }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<Order> getOrderById(@PathVariable Long id, HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        if (userId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
+        }
+        
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+                
+        // Check ownership or admin role
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        
+        if (!isAdmin && (order.getUser() == null || !order.getUser().getId().equals(userId))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to view this order");
+        }
+        
+        return ResponseEntity.ok(order);
+    }
+    
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<Order> cancelOrder(@PathVariable Long id, HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        if (userId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
+        }
+        
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+                
+        // Check ownership or admin role
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        
+        if (!isAdmin && (order.getUser() == null || !order.getUser().getId().equals(userId))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to cancel this order");
+        }
+        
+        if (order.getStatus() != Order.OrderStatus.PENDING) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Only PENDING orders can be cancelled. Current status: " + order.getStatus());
+        }
+        
+        order.setStatus(Order.OrderStatus.CANCELLED);
+        Order updatedOrder = orderRepository.save(order);
+        return ResponseEntity.ok(updatedOrder);
+    }
 
     @PostMapping
     @Transactional

@@ -1,10 +1,17 @@
 package com.example.e_commerce.config;
 
 import com.example.e_commerce.model.Product;
+import com.example.e_commerce.model.User;
 import com.example.e_commerce.repository.ProductRepository;
+import com.example.e_commerce.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.mindrot.jbcrypt.BCrypt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -14,9 +21,37 @@ import java.util.List;
 public class DataSeeder implements CommandLineRunner {
 
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
+    
+    private static final Logger logger = LoggerFactory.getLogger(DataSeeder.class);
+    
+    @Value("${admin.seed.password:admin123}")
+    private String adminSeedPassword;
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
+        
+        // 1. Patch any existing users that have a NULL role
+        userRepository.updateNullRolesToUser();
+        
+        // 2. Seed Admin User
+        if (userRepository.findByEmail("admin@example.com").isEmpty()) {
+            User admin = new User();
+            admin.setName("System Admin");
+            admin.setEmail("admin@example.com");
+            admin.setPasswordHash(BCrypt.hashpw(adminSeedPassword, BCrypt.gensalt()));
+            admin.setRole(User.Role.ADMIN);
+            admin.setCustomerGroup(User.CustomerGroup.WHOLESALE); // Or retail, doesn't matter for admin
+            userRepository.save(admin);
+            
+            logger.warn("==================================================================");
+            logger.warn("SEEDED ADMIN USER CREATED: admin@example.com");
+            logger.warn("This is a dev account. Please change the password or remove in prod!");
+            logger.warn("==================================================================");
+        }
+    
+        // 3. Seed Products
         if (productRepository.count() == 0) {
             Product p1 = new Product();
             p1.setName("Premium Office Chair");
