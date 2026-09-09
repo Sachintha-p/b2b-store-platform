@@ -39,7 +39,7 @@ const Register = () => {
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" 
+            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary outline-none" 
             placeholder="John Doe"
           />
         </div>
@@ -51,7 +51,7 @@ const Register = () => {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" 
+            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary outline-none" 
             placeholder="you@example.com"
           />
         </div>
@@ -63,7 +63,7 @@ const Register = () => {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" 
+            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary outline-none" 
             placeholder="••••••••"
           />
         </div>
@@ -78,7 +78,7 @@ const Register = () => {
       </form>
 
       <p className="mt-6 text-center text-sm text-gray-600">
-        Already have an account? <Link to="/login" className="text-blue-600 font-semibold hover:underline">Sign in</Link>
+        Already have an account? <Link to="/login" className="text-primary font-semibold hover:underline">Sign in</Link>
       </p>
     </div>
   );

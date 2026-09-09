@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
@@ -43,7 +43,7 @@ const Profile = () => {
         {/* User Info Card */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 bg-blue-100 text-primary rounded-full flex items-center justify-center">
               <UserIcon className="w-8 h-8" />
             </div>
             <div>
@@ -67,7 +67,7 @@ const Profile = () => {
             <div className="flex items-center gap-3 text-sm">
               <Shield className="w-4 h-4 text-gray-400" />
               <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold ${user.provider === 'GOOGLE' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`}>
-                {user.provider === 'GOOGLE' ? '🔗 Google Account' : '🔑 Email & Password'}
+                {user.provider === 'GOOGLE' ? 'ðŸ”— Google Account' : 'ðŸ”‘ Email & Password'}
               </span>
             </div>
           </div>
@@ -91,7 +91,7 @@ const Profile = () => {
           
           {loading ? (
             <div className="p-12 flex justify-center">
-              <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+              <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
             </div>
           ) : orders.length === 0 ? (
             <div className="p-12 text-center text-gray-500">

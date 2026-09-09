@@ -26,4 +26,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     );
 
     List<Product> findByCategoryAndIdNot(String category, Long id);
+
+    @Query("SELECT new com.example.e_commerce.dto.CategoryCountDTO(p.category, COUNT(p)) FROM Product p WHERE p.stockQuantity > 0 GROUP BY p.category")
+    List<com.example.e_commerce.dto.CategoryCountDTO> getCategoryCounts();
 }

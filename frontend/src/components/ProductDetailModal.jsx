@@ -66,7 +66,7 @@ const ProductDetailModal = ({ product, isOpen, onClose, onSelectProduct }) => {
                 <div className="space-y-3 mb-8 bg-gray-50 p-4 rounded-xl">
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">Retail Price</span>
-                    <span className="text-xl font-bold text-blue-600">${product.retailPrice?.toFixed(2)}</span>
+                    <span className="text-xl font-bold text-primary">${product.retailPrice?.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between items-center pt-3 border-t border-gray-200">
                     <span className="text-sm font-medium text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
@@ -82,7 +82,7 @@ const ProductDetailModal = ({ product, isOpen, onClose, onSelectProduct }) => {
                     onClose();
                   }}
                   disabled={isOutOfStock}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100">
+                  className="w-full bg-primary hover:bg-primary-hover text-white font-semibold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100">
                   <ShoppingCart className="w-5 h-5" />
                   <span>{isOutOfStock ? 'Currently Unavailable' : 'Add to Cart'}</span>
                 </button>
@@ -108,7 +108,7 @@ const ProductDetailModal = ({ product, isOpen, onClose, onSelectProduct }) => {
                       </div>
                       <div className="p-3 border-t border-gray-50">
                         <h4 className="text-sm font-semibold text-gray-900 truncate">{rel.name}</h4>
-                        <p className="text-xs font-bold text-blue-600 mt-1">${rel.retailPrice?.toFixed(2)}</p>
+                        <p className="text-xs font-bold text-primary mt-1">${rel.retailPrice?.toFixed(2)}</p>
                       </div>
                     </div>
                   ))}

@@ -27,7 +27,7 @@ const Success = () => {
           <Link to="/profile" className="block w-full bg-gray-900 text-white font-medium py-3 px-4 rounded-xl hover:bg-black transition-colors">
             View Order History
           </Link>
-          <Link to="/" className="block w-full text-blue-600 font-medium py-3 px-4 rounded-xl hover:bg-blue-50 transition-colors">
+          <Link to="/" className="block w-full text-primary font-medium py-3 px-4 rounded-xl hover:bg-primary-light transition-colors">
             Continue Shopping
           </Link>
         </div>

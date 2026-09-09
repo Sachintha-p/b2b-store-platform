@@ -62,6 +62,11 @@ public class User {
     private String taxId;
     
     // Notification Preferences
-    private boolean notifyOrderUpdates = true;
-    private boolean notifyPromotions = true;
+    private Boolean notifyOrderUpdates = true;
+    private Boolean notifyPromotions = true;
+
+    // Custom getter to ensure backward compatibility/null safety if needed
+    public boolean isNotifyOrderUpdates() {
+        return notifyOrderUpdates != null && notifyOrderUpdates;
+    }
 }

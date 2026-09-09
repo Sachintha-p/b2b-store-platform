@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { ShoppingCart, Package, Info, Search, Filter } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import api from '../api';
@@ -15,6 +16,16 @@ const ProductList = () => {
   const [category, setCategory] = useState('');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
+
+  const location = useLocation();
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const cat = searchParams.get('category');
+    if (cat) {
+      setCategory(cat);
+    }
+  }, [location.search]);
 
   // Modal State
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -56,7 +67,7 @@ const ProductList = () => {
       <div className="w-full md:w-64 flex-shrink-0 space-y-6">
         <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
           <div className="flex items-center gap-2 mb-4">
-            <Filter className="w-5 h-5 text-blue-600" />
+            <Filter className="w-5 h-5 text-primary" />
             <h3 className="font-bold text-gray-900">Filters</h3>
           </div>
           
@@ -67,7 +78,7 @@ const ProductList = () => {
               <select 
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary outline-none transition-all"
               >
                 <option value="">All Categories</option>
                 <option value="Electronics">Electronics</option>
@@ -85,7 +96,7 @@ const ProductList = () => {
                   placeholder="Min"
                   value={minPrice}
                   onChange={(e) => setMinPrice(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary outline-none"
                 />
                 <span className="text-gray-400">-</span>
                 <input 
@@ -93,14 +104,14 @@ const ProductList = () => {
                   placeholder="Max"
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary outline-none"
                 />
               </div>
             </div>
             
             <button 
               onClick={() => {setQuery(''); setCategory(''); setMinPrice(''); setMaxPrice('');}}
-              className="w-full py-2 text-sm font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors"
+              className="w-full py-2 text-sm font-semibold text-primary bg-primary-light hover:bg-blue-100 rounded-xl transition-colors"
             >
               Clear Filters
             </button>
@@ -126,14 +137,14 @@ const ProductList = () => {
               placeholder="Search products..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-shadow"
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary outline-none transition-shadow"
             />
           </div>
         </div>
         
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
           </div>
         ) : error ? (
           <div className="bg-red-50 text-red-600 p-4 rounded-lg flex items-center gap-3">
@@ -171,7 +182,7 @@ const ProductList = () => {
                   <div className="p-5 flex-1 flex flex-col">
                     <h3 
                       onClick={() => openProduct(product)}
-                      className="text-lg font-bold text-gray-900 leading-tight mb-1 cursor-pointer hover:text-blue-600 transition-colors"
+                      className="text-lg font-bold text-gray-900 leading-tight mb-1 cursor-pointer hover:text-primary transition-colors"
                     >
                       {product.name}
                     </h3>
@@ -180,7 +191,7 @@ const ProductList = () => {
                     <div className="space-y-2 mb-5 bg-gray-50 p-3 rounded-lg">
                       <div className="flex justify-between items-center">
                         <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Retail</span>
-                        <span className="text-lg font-bold text-blue-600">${product.retailPrice?.toFixed(2)}</span>
+                        <span className="text-lg font-bold text-primary">${product.retailPrice?.toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between items-center pt-2 border-t border-gray-200">
                         <span className="text-xs font-medium text-gray-500 uppercase tracking-wider flex items-center gap-1">
@@ -199,7 +210,7 @@ const ProductList = () => {
                       className={`w-full font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 ${
                         isOutOfStock 
                           ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                          : 'bg-gray-900 hover:bg-black text-white active:scale-[0.98]'
+                          : 'bg-primary hover:bg-primary-hover text-white shadow-[0_0_10px_rgba(37,99,235,0.2)] active:scale-[0.98]'
                       }`}>
                       <ShoppingCart className="w-4 h-4" />
                       <span>{isOutOfStock ? 'Sold Out' : 'Add to Cart'}</span>

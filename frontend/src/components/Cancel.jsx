@@ -12,7 +12,7 @@ const Cancel = () => {
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Payment Cancelled</h1>
         <p className="text-gray-500 mb-8">Your order was not completed and you haven't been charged.</p>
         
-        <Link to="/" className="block w-full bg-blue-600 text-white font-medium py-3 px-4 rounded-xl hover:bg-blue-700 transition-colors">
+        <Link to="/" className="block w-full bg-primary text-white font-medium py-3 px-4 rounded-xl hover:bg-primary-hover transition-colors">
           Return to Store
         </Link>
       </div>

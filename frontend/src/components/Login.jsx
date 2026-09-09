@@ -42,7 +42,7 @@ const Login = () => {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" 
+            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary outline-none" 
             placeholder="you@example.com"
           />
         </div>
@@ -54,7 +54,7 @@ const Login = () => {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" 
+            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary outline-none" 
             placeholder="••••••••"
           />
         </div>
@@ -62,7 +62,7 @@ const Login = () => {
         <button 
           type="submit" 
           disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors mt-2"
+          className="w-full bg-primary hover:bg-primary-hover text-white font-semibold py-3 px-4 rounded-xl transition-colors mt-2"
         >
           {loading ? 'Signing in...' : 'Sign In'}
         </button>
@@ -90,7 +90,7 @@ const Login = () => {
       </button>
 
       <p className="mt-6 text-center text-sm text-gray-600">
-        Don't have an account? <Link to="/register" className="text-blue-600 font-semibold hover:underline">Register here</Link>
+        Don't have an account? <Link to="/register" className="text-primary font-semibold hover:underline">Register here</Link>
       </p>
     </div>
   );

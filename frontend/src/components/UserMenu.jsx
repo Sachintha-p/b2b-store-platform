@@ -32,7 +32,7 @@ const UserMenu = () => {
     return (
       <Link 
         to="/login" 
-        className="text-gray-600 hover:text-gray-900 transition-colors flex items-center gap-1"
+        className="text-primary/80 hover:text-primary transition-colors flex items-center gap-1"
         title="Sign In"
       >
         <UserCircle className="w-6 h-6" />
@@ -49,7 +49,7 @@ const UserMenu = () => {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 hover:bg-blue-700 transition-colors"
+        className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white font-bold text-xs focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 hover:bg-primary-hover transition-colors"
         title="Account Menu"
       >
         {getInitials(user.name)}
@@ -74,7 +74,7 @@ const UserMenu = () => {
             <Link 
               to="/profile" 
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors"
             >
               <Package className="w-4 h-4" />
               My Orders
@@ -82,7 +82,7 @@ const UserMenu = () => {
             <Link 
               to="/profile"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors"
             >
               <Settings className="w-4 h-4" />
               Profile Settings

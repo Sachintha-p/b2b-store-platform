@@ -44,7 +44,7 @@ const CartOverlay = () => {
                     <div key={item.id} className="flex gap-4 items-center bg-gray-50 p-4 rounded-xl">
                       <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-semibold text-gray-900 truncate">{item.name}</h3>
-                        <p className="text-sm font-medium text-blue-600 mt-1">
+                        <p className="text-sm font-medium text-primary mt-1">
                           ${(item.isB2B ? item.wholesalePrice : item.retailPrice).toFixed(2)}
                         </p>
                       </div>

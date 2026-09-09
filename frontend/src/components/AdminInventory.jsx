@@ -31,7 +31,7 @@ const AdminInventory = () => {
         <span className="text-gray-300">|</span>
         <Link to="/admin/coupons" className="text-gray-500 hover:text-gray-900 font-medium">Coupons</Link>
         <span className="text-gray-300">|</span>
-        <Link to="/admin/inventory" className="text-blue-600 font-bold border-b-2 border-blue-600 pb-4 -mb-[17px]">Inventory</Link>
+        <Link to="/admin/inventory" className="text-primary font-bold border-b-2 border-primary pb-4 -mb-[17px]">Inventory</Link>
       </div>
 
       {lowStockProducts.length > 0 && (

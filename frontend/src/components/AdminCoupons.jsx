@@ -60,7 +60,7 @@ const AdminCoupons = () => {
       <div className="flex items-center gap-4 border-b border-gray-200 pb-4">
         <Link to="/admin/orders" className="text-gray-500 hover:text-gray-900 font-medium">Orders</Link>
         <span className="text-gray-300">|</span>
-        <Link to="/admin/coupons" className="text-blue-600 font-bold border-b-2 border-blue-600 pb-4 -mb-[17px]">Coupons</Link>
+        <Link to="/admin/coupons" className="text-primary font-bold border-b-2 border-primary pb-4 -mb-[17px]">Coupons</Link>
         <span className="text-gray-300">|</span>
         <Link to="/admin/inventory" className="text-gray-500 hover:text-gray-900 font-medium">Inventory</Link>
       </div>
@@ -69,7 +69,7 @@ const AdminCoupons = () => {
         {/* Create Form */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit">
           <div className="flex items-center gap-2 mb-6">
-            <Plus className="w-5 h-5 text-blue-600" />
+            <Plus className="w-5 h-5 text-primary" />
             <h3 className="text-lg font-bold text-gray-900">New Coupon</h3>
           </div>
 
@@ -81,7 +81,7 @@ const AdminCoupons = () => {
                 required
                 value={formData.code}
                 onChange={(e) => setFormData({...formData, code: e.target.value.toUpperCase()})}
-                className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none uppercase" 
+                className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary outline-none uppercase" 
                 placeholder="SUMMER20"
               />
             </div>
@@ -91,7 +91,7 @@ const AdminCoupons = () => {
               <select 
                 value={formData.type}
                 onChange={(e) => setFormData({...formData, type: e.target.value})}
-                className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary outline-none"
               >
                 <option value="PERCENTAGE">Percentage (%)</option>
                 <option value="FIXED">Fixed Amount ($)</option>
@@ -106,7 +106,7 @@ const AdminCoupons = () => {
                 required
                 value={formData.discountValue}
                 onChange={(e) => setFormData({...formData, discountValue: e.target.value})}
-                className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" 
+                className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary outline-none" 
                 placeholder="20"
               />
             </div>
@@ -118,12 +118,12 @@ const AdminCoupons = () => {
                 step="0.01"
                 value={formData.minOrderValue}
                 onChange={(e) => setFormData({...formData, minOrderValue: e.target.value})}
-                className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" 
+                className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary outline-none" 
                 placeholder="50.00"
               />
             </div>
 
-            <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl transition-colors mt-2">
+            <button type="submit" className="w-full bg-primary hover:bg-primary-hover text-white font-semibold py-2.5 rounded-xl transition-colors mt-2">
               Create Coupon
             </button>
           </form>

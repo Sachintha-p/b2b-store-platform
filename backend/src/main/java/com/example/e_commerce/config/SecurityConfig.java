@@ -35,7 +35,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
-                .requestMatchers("/api/coupons/validate").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/products/categories").permitAll()
+                .requestMatchers("/api/coupons/validate", "/api/coupons/active").permitAll()
                 .requestMatchers("/api/payments/**").permitAll()
                 .requestMatchers("/api/webhooks/**").permitAll()
                 

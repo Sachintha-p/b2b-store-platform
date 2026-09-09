@@ -64,7 +64,7 @@ const AdminOrders = () => {
   return (
     <div className="space-y-8">
       <div className="flex items-center gap-4 border-b border-gray-200 pb-4">
-        <Link to="/admin/orders" className="text-blue-600 font-bold border-b-2 border-blue-600 pb-4 -mb-[17px]">Orders</Link>
+        <Link to="/admin/orders" className="text-primary font-bold border-b-2 border-primary pb-4 -mb-[17px]">Orders</Link>
         <span className="text-gray-300">|</span>
         <Link to="/admin/coupons" className="text-gray-500 hover:text-gray-900 font-medium">Coupons</Link>
         <span className="text-gray-300">|</span>
@@ -120,7 +120,7 @@ const AdminOrders = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <select
-                        className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-32 p-2 ml-auto outline-none transition-colors"
+                        className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-primary focus:border-primary block w-32 p-2 ml-auto outline-none transition-colors"
                         value={order.status}
                         onChange={(e) => updateStatus(order.id, e.target.value)}
                       >

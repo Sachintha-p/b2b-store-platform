@@ -23,13 +23,19 @@ public class ProductController {
             @RequestParam(required = false) String query,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) BigDecimal minPrice,
-            @RequestParam(required = false) BigDecimal maxPrice) {
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) Integer limit) {
         
-        // If all parameters are null or empty, return all products
+        // If all parameters are null or empty, return all products (or sorted/limited)
         if ((query == null || query.isBlank()) && 
             (category == null || category.isBlank()) && 
             minPrice == null && 
             maxPrice == null) {
+            
+            if ("newest".equalsIgnoreCase(sort) && limit != null) {
+                return productRepository.findAll(org.springframework.data.domain.PageRequest.of(0, limit, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "id"))).getContent();
+            }
             return productRepository.findAll();
         }
         
@@ -40,6 +46,11 @@ public class ProductController {
         }
 
         return productRepository.searchProducts(formattedQuery, category, minPrice, maxPrice);
+    }
+    
+    @GetMapping("/categories")
+    public List<com.example.e_commerce.dto.CategoryCountDTO> getCategories() {
+        return productRepository.getCategoryCounts();
     }
     
     @GetMapping("/{id}/related")

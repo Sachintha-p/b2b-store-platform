@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/coupons")
@@ -26,6 +27,16 @@ public class CouponController {
     @GetMapping
     public List<Coupon> getAllCoupons() {
         return couponRepository.findAll();
+    }
+
+    @GetMapping("/active")
+    public List<com.example.e_commerce.dto.CouponSummaryDTO> getActiveCoupons() {
+        LocalDateTime now = LocalDateTime.now();
+        return couponRepository.findAll().stream()
+                .filter(c -> c.getExpiryDate() == null || c.getExpiryDate().isAfter(now))
+                .map(c -> new com.example.e_commerce.dto.CouponSummaryDTO(
+                        c.getCode(), c.getType(), c.getDiscountValue(), c.getExpiryDate()))
+                .collect(Collectors.toList());
     }
 
     @PostMapping
