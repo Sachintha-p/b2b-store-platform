@@ -51,6 +51,10 @@ public class AuthController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
         }
 
+        if (!user.isActive()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Account suspended");
+        }
+
         String token = jwtUtil.generateToken(user.getEmail(), user.getId(), user.getRole() != null ? user.getRole().name() : "USER");
         return ResponseEntity.ok(new AuthResponse(token, user));
     }
@@ -70,6 +74,10 @@ public class AuthController {
         Long userId = jwtUtil.extractUserId(token);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        if (!user.isActive()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Account suspended");
+        }
 
         return ResponseEntity.ok(user);
     }

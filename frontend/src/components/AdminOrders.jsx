@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { PackageOpen, Clock, CheckCircle, Truck, XCircle, ArrowRight } from 'lucide-react';
 
 import { Link } from 'react-router-dom';
@@ -18,7 +18,7 @@ const AdminOrders = () => {
 
   const fetchOrders = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/orders');
+      const response = await api.get('/orders');
       setOrders(response.data);
       setLoading(false);
     } catch (err) {
@@ -34,7 +34,7 @@ const AdminOrders = () => {
 
   const updateStatus = async (orderId, newStatus) => {
     try {
-      await axios.put(`http://localhost:8080/api/orders/${orderId}/status`, `"${newStatus}"`, {
+      await api.put(`/orders/${orderId}/status`, `"${newStatus}"`, {
         headers: {
           'Content-Type': 'application/json'
         }
