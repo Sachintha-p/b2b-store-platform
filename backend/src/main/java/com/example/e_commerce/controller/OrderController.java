@@ -36,6 +36,7 @@ public class OrderController {
     private final UserRepository userRepository;
     private final CouponRepository couponRepository;
     private final JwtUtil jwtUtil;
+    private final com.example.e_commerce.service.NotificationService notificationService;
 
     @GetMapping
     public List<Order> getAllOrders() {
@@ -60,6 +61,13 @@ public class OrderController {
                 Order.OrderStatus newStatus = Order.OrderStatus.valueOf(status.replace("\"", "").trim().toUpperCase());
                 order.setStatus(newStatus);
                 Order updatedOrder = orderRepository.save(order);
+                
+                try {
+                    notificationService.createOrderStatusNotification(updatedOrder);
+                } catch (Exception ex) {
+                    System.err.println("Failed to send notification: " + ex.getMessage());
+                }
+                
                 return ResponseEntity.ok(updatedOrder);
             } catch (IllegalArgumentException e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid status");
@@ -112,6 +120,13 @@ public class OrderController {
         
         order.setStatus(Order.OrderStatus.CANCELLED);
         Order updatedOrder = orderRepository.save(order);
+        
+        try {
+            notificationService.createOrderStatusNotification(updatedOrder);
+        } catch (Exception ex) {
+            System.err.println("Failed to send notification: " + ex.getMessage());
+        }
+        
         return ResponseEntity.ok(updatedOrder);
     }
 

@@ -1,7 +1,9 @@
 package com.example.e_commerce.config;
 
+import com.example.e_commerce.model.Address;
 import com.example.e_commerce.model.Product;
 import com.example.e_commerce.model.User;
+import com.example.e_commerce.repository.AddressRepository;
 import com.example.e_commerce.repository.ProductRepository;
 import com.example.e_commerce.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class DataSeeder implements CommandLineRunner {
 
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final AddressRepository addressRepository;
     
     private static final Logger logger = LoggerFactory.getLogger(DataSeeder.class);
     
@@ -49,6 +52,23 @@ public class DataSeeder implements CommandLineRunner {
             logger.warn("SEEDED ADMIN USER CREATED: admin@example.com");
             logger.warn("This is a dev account. Please change the password or remove in prod!");
             logger.warn("==================================================================");
+        }
+        
+        // 2.5 Migrate Old Shipping Addresses
+        List<User> users = userRepository.findAll();
+        for (User u : users) {
+            if (u.getShippingAddress() != null && !u.getShippingAddress().isBlank()) {
+                List<Address> userAddresses = addressRepository.findByUserId(u.getId());
+                if (userAddresses.isEmpty()) {
+                    Address address = new Address();
+                    address.setUser(u);
+                    address.setLabel("Migrated Address");
+                    address.setLine1(u.getShippingAddress());
+                    address.setDefaultShipping(true);
+                    address.setDefaultBilling(true);
+                    addressRepository.save(address);
+                }
+            }
         }
     
         // 3. Seed Products

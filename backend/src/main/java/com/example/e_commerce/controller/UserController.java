@@ -23,6 +23,19 @@ public class UserController {
     public static class ProfileUpdateRequest {
         private String name;
         private String shippingAddress;
+        private String phone;
+    }
+
+    @Data
+    public static class BusinessInfoRequest {
+        private String companyName;
+        private String taxId;
+    }
+
+    @Data
+    public static class NotificationPrefRequest {
+        private boolean notifyOrderUpdates;
+        private boolean notifyPromotions;
     }
 
     @Data
@@ -47,9 +60,42 @@ public class UserController {
 
         user.setName(request.getName());
         user.setShippingAddress(request.getShippingAddress());
+        user.setPhone(request.getPhone());
 
         User updatedUser = userRepository.save(user);
         return ResponseEntity.ok(updatedUser);
+    }
+    
+    @PutMapping("/me/business-info")
+    public ResponseEntity<User> updateBusinessInfo(@RequestBody BusinessInfoRequest request, HttpServletRequest httpRequest) {
+        Long userId = (Long) httpRequest.getAttribute("userId");
+        if (userId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        user.setCompanyName(request.getCompanyName());
+        user.setTaxId(request.getTaxId());
+
+        return ResponseEntity.ok(userRepository.save(user));
+    }
+    
+    @PutMapping("/me/notification-preferences")
+    public ResponseEntity<User> updateNotificationPreferences(@RequestBody NotificationPrefRequest request, HttpServletRequest httpRequest) {
+        Long userId = (Long) httpRequest.getAttribute("userId");
+        if (userId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        user.setNotifyOrderUpdates(request.isNotifyOrderUpdates());
+        user.setNotifyPromotions(request.isNotifyPromotions());
+
+        return ResponseEntity.ok(userRepository.save(user));
     }
 
     @PutMapping("/me/password")

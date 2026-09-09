@@ -25,6 +25,7 @@ public class WebhookController {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final EmailService emailService;
+    private final com.example.e_commerce.service.NotificationService notificationService;
 
     @Value("${stripe.webhook.secret}")
     private String endpointSecret;
@@ -80,6 +81,12 @@ public class WebhookController {
                         order.setStatus(Order.OrderStatus.PAID);
                         orderRepository.save(order);
                         
+                        try {
+                            notificationService.createOrderStatusNotification(order);
+                        } catch (Exception ex) {
+                            System.err.println("Failed to send notification: " + ex.getMessage());
+                        }
+                        
                         // Fire Email!
                         emailService.sendOrderConfirmation(order);
                     } else {
@@ -87,6 +94,12 @@ public class WebhookController {
                         order.setStatus(Order.OrderStatus.CANCELLED);
                         // In reality, we would trigger a refund here.
                         orderRepository.save(order);
+                        
+                        try {
+                            notificationService.createOrderStatusNotification(order);
+                        } catch (Exception ex) {
+                            System.err.println("Failed to send notification: " + ex.getMessage());
+                        }
                     }
                 }
             }

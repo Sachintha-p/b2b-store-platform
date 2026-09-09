@@ -52,6 +52,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/orders/{id}").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/api/orders/{id}/cancel").authenticated()
                 .requestMatchers("/api/users/me/**").authenticated()
+                .requestMatchers("/api/notifications/**").authenticated()
                 
                 // 5. Catch-all fallback
                 .anyRequest().authenticated()

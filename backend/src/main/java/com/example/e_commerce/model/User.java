@@ -52,4 +52,16 @@ public class User {
     private Role role = Role.USER;
     
     private java.time.LocalDateTime createdAt = java.time.LocalDateTime.now();
+    
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<Address> addresses = new java.util.ArrayList<>();
+    
+    // Business/Profile Fields
+    private String phone;
+    private String companyName;
+    private String taxId;
+    
+    // Notification Preferences
+    private boolean notifyOrderUpdates = true;
+    private boolean notifyPromotions = true;
 }
