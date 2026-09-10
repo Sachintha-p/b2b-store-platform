@@ -46,9 +46,13 @@ const ProductDetailModal = ({ product, isOpen, onClose, onSelectProduct }) => {
 
           <div className="p-6 md:p-8">
             <div className="flex flex-col md:flex-row gap-8">
-              {/* Product Image Placeholder */}
-              <div className="w-full md:w-1/2 aspect-square bg-gray-100 rounded-2xl flex items-center justify-center relative">
-                 <Package className="w-24 h-24 text-gray-300" />
+              {/* Product Image */}
+              <div className="w-full md:w-1/2 aspect-square bg-gray-100 rounded-2xl flex items-center justify-center relative overflow-hidden">
+                 {product.imageUrl ? (
+                   <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+                 ) : (
+                   <Package className="w-24 h-24 text-gray-300" />
+                 )}
                  {isOutOfStock && (
                    <div className="absolute inset-0 bg-white/60 backdrop-blur-sm rounded-2xl flex items-center justify-center">
                      <span className="bg-red-500 text-white font-bold px-4 py-1.5 rounded-full shadow-lg">
@@ -103,8 +107,12 @@ const ProductDetailModal = ({ product, isOpen, onClose, onSelectProduct }) => {
                       onClick={() => onSelectProduct(rel)}
                       className="cursor-pointer group bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-md transition-all hover:border-blue-200"
                     >
-                      <div className="aspect-square bg-gray-50 flex items-center justify-center p-4">
-                        <Package className="w-10 h-10 text-gray-300 group-hover:text-blue-400 transition-colors" />
+                      <div className="aspect-square bg-gray-50 flex items-center justify-center overflow-hidden">
+                        {rel.imageUrl ? (
+                          <img src={rel.imageUrl} alt={rel.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                        ) : (
+                          <Package className="w-10 h-10 text-gray-300 group-hover:text-blue-400 transition-colors" />
+                        )}
                       </div>
                       <div className="p-3 border-t border-gray-50">
                         <h4 className="text-sm font-semibold text-gray-900 truncate">{rel.name}</h4>

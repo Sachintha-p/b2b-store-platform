@@ -163,12 +163,20 @@ const ProductList = () => {
               const isOutOfStock = product.stockQuantity === 0;
               return (
                 <div key={product.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col group relative">
-                  {/* Image Placeholder */}
+                  {/* Product Image */}
                   <div 
                     onClick={() => openProduct(product)}
-                    className="aspect-w-1 aspect-h-1 bg-gray-50 relative group-hover:bg-gray-100 transition-colors duration-300 flex items-center justify-center p-8 cursor-pointer"
+                    className="w-full h-48 bg-gray-50 relative group-hover:bg-gray-100 transition-colors duration-300 flex items-center justify-center cursor-pointer overflow-hidden rounded-t-2xl"
                   >
-                     <Package className="w-16 h-16 text-gray-300 group-hover:text-gray-400 transition-colors" />
+                     {product.imageUrl ? (
+                       <img 
+                         src={product.imageUrl} 
+                         alt={product.name} 
+                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                       />
+                     ) : (
+                       <Package className="w-16 h-16 text-gray-300 group-hover:text-gray-400 transition-colors" />
+                     )}
                      <span className={`absolute top-3 right-3 text-xs font-bold px-2.5 py-1 rounded-full shadow-sm backdrop-blur ${isOutOfStock ? 'bg-red-500/90 text-white' : 'bg-white/90 text-gray-700'}`}>
                        {isOutOfStock ? 'Out of Stock' : `Stock: ${product.stockQuantity}`}
                      </span>

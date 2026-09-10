@@ -13,6 +13,4 @@ public class OrderItemRequest {
     @NotNull(message = "Quantity is mandatory")
     @Positive(message = "Quantity must be positive")
     private Integer quantity;
-    
-    private boolean isB2B; // True if wholesale pricing should be applied
 }

@@ -178,8 +178,12 @@ const Home = () => {
                   
                   return (
                     <div key={product.id} className="bg-gray-50 rounded-2xl p-4 flex flex-col hover:bg-gray-100 transition-colors cursor-pointer border border-transparent hover:border-gray-200" onClick={() => navigate(`/products?category=${encodeURIComponent(product.category)}`)}>
-                      <div className="aspect-w-1 aspect-h-1 mb-3 flex items-center justify-center bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                        <Package className="w-10 h-10 text-gray-300" />
+                      <div className="w-full h-32 mb-3 flex items-center justify-center bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden relative">
+                        {product.imageUrl ? (
+                          <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <Package className="w-10 h-10 text-gray-300" />
+                        )}
                       </div>
                       <h4 className="font-bold text-gray-900 text-sm truncate">{product.name}</h4>
                       <p className="text-primary font-bold text-sm mt-1">${displayPrice?.toFixed(2)}</p>
@@ -242,8 +246,12 @@ const Home = () => {
 
             return (
               <div key={product.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col group relative">
-                <div className="aspect-w-1 aspect-h-1 bg-gray-50 relative group-hover:bg-gray-100 transition-colors duration-300 flex items-center justify-center p-8">
-                   <Package className="w-16 h-16 text-gray-300 group-hover:text-gray-400 transition-colors" />
+                <div className="w-full h-48 bg-gray-50 relative group-hover:bg-gray-100 transition-colors duration-300 flex items-center justify-center overflow-hidden rounded-t-2xl">
+                   {product.imageUrl ? (
+                     <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                   ) : (
+                     <Package className="w-16 h-16 text-gray-300 group-hover:text-gray-400 transition-colors" />
+                   )}
                    {isB2B && (
                      <span className="absolute top-3 left-3 bg-purple-100 text-purple-700 text-xs font-bold px-2 py-1 rounded shadow-sm">
                        WHOLESALE

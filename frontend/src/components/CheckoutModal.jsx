@@ -81,8 +81,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
       couponCode: discount > 0 ? promoCode : null,
       items: cartItems.map(item => ({
         productId: item.id,
-        quantity: item.quantity,
-        isB2B: isWholesale
+        quantity: item.quantity
       }))
     };
 

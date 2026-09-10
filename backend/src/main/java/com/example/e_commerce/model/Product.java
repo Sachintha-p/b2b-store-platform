@@ -25,6 +25,7 @@ public class Product {
     @NotBlank(message = "Product name is mandatory")
     private String name;
 
+    @jakarta.persistence.Column(columnDefinition = "TEXT")
     private String description;
 
     @NotNull(message = "Retail price is required")
@@ -43,6 +44,12 @@ public class Product {
 
     // Image support
     private String imageUrl;
+    private String imagePublicId;
+
+    @jakarta.persistence.OneToMany(mappedBy = "product", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
+    @jakarta.persistence.OrderBy("displayOrder ASC")
+    private java.util.List<ProductImage> additionalImages = new java.util.ArrayList<>();
+
 
     // Soft-delete: preserves order history integrity when a product is "deleted"
     private Boolean isArchived = false;

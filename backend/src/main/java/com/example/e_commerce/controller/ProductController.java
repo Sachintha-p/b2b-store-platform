@@ -1,6 +1,10 @@
 package com.example.e_commerce.controller;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.example.e_commerce.model.Product;
+import com.example.e_commerce.model.ProductImage;
+import com.example.e_commerce.repository.ProductImageRepository;
 import com.example.e_commerce.repository.ProductRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +21,8 @@ import java.util.List;
 public class ProductController {
 
     private final ProductRepository productRepository;
+    private final ProductImageRepository productImageRepository;
+    private final Cloudinary cloudinary;
 
     // ---- Public READ endpoints ----
 
@@ -84,6 +90,14 @@ public class ProductController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/{id}/images")
+    public ResponseEntity<List<ProductImage>> getProductImages(@PathVariable Long id) {
+        if (!productRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(productImageRepository.findByProductIdOrderByDisplayOrderAsc(id));
+    }
+
     // ---- Admin WRITE endpoints ----
 
     @PostMapping
@@ -111,27 +125,40 @@ public class ProductController {
 
     /**
      * Soft-delete: sets isArchived=true instead of hard deleting.
-     * This prevents FK constraint violations from OrderItems referencing this product.
-     * Also deletes any associated image file from disk.
+     * Destroys primary Cloudinary image AND all gallery ProductImages from Cloudinary before archiving.
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         return productRepository.findById(id)
                 .map(existing -> {
-                    // Delete image file from disk if present (best-effort)
-                    String imageUrl = existing.getImageUrl();
-                    if (imageUrl != null && !imageUrl.isBlank()) {
+                    // Destroy primary Cloudinary image if present
+                    String publicId = existing.getImagePublicId();
+                    if (publicId != null && !publicId.isBlank()) {
                         try {
-                            String filename = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
-                            java.nio.file.Path filePath = java.nio.file.Paths.get(System.getProperty("user.dir"), "uploads", "products").resolve(filename);
-                            java.nio.file.Files.deleteIfExists(filePath);
-                        } catch (java.io.IOException e) {
-                            System.err.println("Warning: could not delete image file on product archive: " + e.getMessage());
+                            cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+                        } catch (Exception e) {
+                            System.err.println("Warning: could not delete primary Cloudinary image on product archive: " + e.getMessage());
                         }
                     }
-                    // Soft delete — do NOT hard delete to preserve order history
+
+                    // Destroy all gallery Cloudinary images
+                    if (existing.getAdditionalImages() != null) {
+                        for (ProductImage galleryImg : existing.getAdditionalImages()) {
+                            if (galleryImg.getImagePublicId() != null && !galleryImg.getImagePublicId().isBlank()) {
+                                try {
+                                    cloudinary.uploader().destroy(galleryImg.getImagePublicId(), ObjectUtils.emptyMap());
+                                } catch (Exception e) {
+                                    System.err.println("Warning: could not delete gallery Cloudinary image on product archive: " + e.getMessage());
+                                }
+                            }
+                        }
+                        existing.getAdditionalImages().clear();
+                    }
+
+                    // Soft delete — preserve order history integrity
                     existing.setIsArchived(true);
                     existing.setImageUrl(null);
+                    existing.setImagePublicId(null);
                     productRepository.save(existing);
                     return ResponseEntity.ok().<Void>build();
                 })

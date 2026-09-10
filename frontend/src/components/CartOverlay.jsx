@@ -4,7 +4,7 @@ import { useCart } from '../context/CartContext';
 import CheckoutModal from './CheckoutModal';
 
 const CartOverlay = () => {
-  const { cartItems, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, getCartTotal } = useCart();
+  const { cartItems, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, getCartTotal, isWholesale } = useCart();
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   if (!isCartOpen && !isCheckoutOpen) return null;
@@ -42,10 +42,17 @@ const CartOverlay = () => {
                 <div className="space-y-6">
                   {cartItems.map(item => (
                     <div key={item.id} className="flex gap-4 items-center bg-gray-50 p-4 rounded-xl">
+                      <div className="w-12 h-12 rounded-lg bg-white border border-gray-200 flex-shrink-0 flex items-center justify-center overflow-hidden">
+                        {item.imageUrl ? (
+                          <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <ShoppingBag className="w-6 h-6 text-gray-300" />
+                        )}
+                      </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-semibold text-gray-900 truncate">{item.name}</h3>
                         <p className="text-sm font-medium text-primary mt-1">
-                          ${(item.isB2B ? item.wholesalePrice : item.retailPrice).toFixed(2)}
+                          ${(isWholesale ? item.wholesalePrice : item.retailPrice).toFixed(2)}
                         </p>
                       </div>
                       

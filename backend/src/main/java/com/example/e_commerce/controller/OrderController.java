@@ -169,8 +169,8 @@ public class OrderController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient stock for product: " + product.getName());
             }
 
-            // Force wholesale price if user is WHOLESALE, otherwise use request's isB2B flag or retail price
-            BigDecimal price = (isWholesaleUser || itemReq.isB2B()) ? product.getWholesalePrice() : product.getRetailPrice();
+            // Price is derived strictly from the authenticated user's database CustomerGroup (WHOLESALE vs RETAIL)
+            BigDecimal price = isWholesaleUser ? product.getWholesalePrice() : product.getRetailPrice();
 
             OrderItem orderItem = new OrderItem();
             orderItem.setProduct(product);

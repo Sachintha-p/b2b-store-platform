@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -38,8 +39,8 @@ public class DataSeeder implements CommandLineRunner {
         // 1. Patch any existing users that have a NULL role
         userRepository.updateNullRolesToUser();
         
-        // 2. Seed Admin User
-        if (userRepository.findByEmail("admin@example.com").isEmpty()) {
+        // 2. Seed Admin User ONLY if no admin user exists at all in the database (checked by role=ADMIN)
+        if (!userRepository.existsByRole(User.Role.ADMIN)) {
             User admin = new User();
             admin.setName("System Admin");
             admin.setEmail("admin@example.com");
@@ -49,7 +50,7 @@ public class DataSeeder implements CommandLineRunner {
             userRepository.save(admin);
             
             logger.warn("==================================================================");
-            logger.warn("SEEDED ADMIN USER CREATED: admin@example.com");
+            logger.warn("SEEDED INITIAL ADMIN USER CREATED: admin@example.com (password: {})", adminSeedPassword);
             logger.warn("This is a dev account. Please change the password or remove in prod!");
             logger.warn("==================================================================");
         }
