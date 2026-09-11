@@ -64,4 +64,20 @@ public class Product {
     public boolean isActive() {
         return !isArchived();
     }
+
+    @com.fasterxml.jackson.annotation.JsonProperty("images")
+    public java.util.List<String> getImages() {
+        java.util.List<String> list = new java.util.ArrayList<>();
+        if (imageUrl != null && !imageUrl.isBlank()) {
+            list.add(imageUrl);
+        }
+        if (additionalImages != null) {
+            for (ProductImage img : additionalImages) {
+                if (img.getImageUrl() != null && !img.getImageUrl().isBlank()) {
+                    list.add(img.getImageUrl());
+                }
+            }
+        }
+        return list;
+    }
 }

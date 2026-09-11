@@ -5,6 +5,7 @@ import api from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import heroBanner from '../assets/hero-banner.png';
+import ProductCard from './ProductCard';
 
 const CategoryIcon = ({ name }) => {
   switch (name?.toLowerCase()) {
@@ -239,51 +240,14 @@ const Home = () => {
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredProducts.map(product => {
-            const isOutOfStock = product.stockQuantity === 0;
-            const isB2B = user?.customerGroup === 'WHOLESALE';
-            const displayPrice = isB2B ? product.wholesalePrice : product.retailPrice;
-
-            return (
-              <div key={product.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col group relative">
-                <div className="w-full h-48 bg-gray-50 relative group-hover:bg-gray-100 transition-colors duration-300 flex items-center justify-center overflow-hidden rounded-t-2xl">
-                   {product.imageUrl ? (
-                     <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                   ) : (
-                     <Package className="w-16 h-16 text-gray-300 group-hover:text-gray-400 transition-colors" />
-                   )}
-                   {isB2B && (
-                     <span className="absolute top-3 left-3 bg-purple-100 text-purple-700 text-xs font-bold px-2 py-1 rounded shadow-sm">
-                       WHOLESALE
-                     </span>
-                   )}
-                </div>
-                
-                <div className="p-5 flex-1 flex flex-col">
-                  <h3 className="text-lg font-bold text-gray-900 leading-tight mb-1">{product.name}</h3>
-                  <p className="text-sm text-gray-500 line-clamp-2 mb-4 flex-1">{product.description}</p>
-                  
-                  <div className="flex justify-between items-end mb-5">
-                    <div>
-                      <span className="text-2xl font-extrabold text-gray-900">${displayPrice?.toFixed(2)}</span>
-                    </div>
-                  </div>
-                  
-                  <button 
-                    onClick={() => addToCart(product)}
-                    disabled={isOutOfStock}
-                    className={`w-full font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 ${
-                      isOutOfStock 
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                        : 'bg-primary hover:bg-primary-hover text-white shadow-[0_0_10px_rgba(37,99,235,0.2)] active:scale-[0.98]'
-                    }`}>
-                    <ShoppingCart className="w-4 h-4" />
-                    <span>{isOutOfStock ? 'Sold Out' : 'Add to Cart'}</span>
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+          {featuredProducts.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              onSelect={() => navigate('/products')}
+              showB2BPrice={false}
+            />
+          ))}
         </div>
       </section>
 

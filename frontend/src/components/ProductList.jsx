@@ -4,6 +4,7 @@ import { ShoppingCart, Package, Info, Search, Filter } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import api from '../api';
 import ProductDetailModal from './ProductDetailModal';
+import ProductCard from './ProductCard';
 
 const ProductList = () => {
   const { addToCart } = useCart();
@@ -159,74 +160,14 @@ const ProductList = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => {
-              const isOutOfStock = product.stockQuantity === 0;
-              return (
-                <div key={product.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col group relative">
-                  {/* Product Image */}
-                  <div 
-                    onClick={() => openProduct(product)}
-                    className="w-full h-48 bg-gray-50 relative group-hover:bg-gray-100 transition-colors duration-300 flex items-center justify-center cursor-pointer overflow-hidden rounded-t-2xl"
-                  >
-                     {product.imageUrl ? (
-                       <img 
-                         src={product.imageUrl} 
-                         alt={product.name} 
-                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                       />
-                     ) : (
-                       <Package className="w-16 h-16 text-gray-300 group-hover:text-gray-400 transition-colors" />
-                     )}
-                     <span className={`absolute top-3 right-3 text-xs font-bold px-2.5 py-1 rounded-full shadow-sm backdrop-blur ${isOutOfStock ? 'bg-red-500/90 text-white' : 'bg-white/90 text-gray-700'}`}>
-                       {isOutOfStock ? 'Out of Stock' : `Stock: ${product.stockQuantity}`}
-                     </span>
-                     {product.category && (
-                       <span className="absolute top-3 left-3 bg-white/90 backdrop-blur text-xs font-semibold px-2 py-1 rounded-md shadow-sm text-gray-500">
-                         {product.category}
-                       </span>
-                     )}
-                  </div>
-                  
-                  <div className="p-5 flex-1 flex flex-col">
-                    <h3 
-                      onClick={() => openProduct(product)}
-                      className="text-lg font-bold text-gray-900 leading-tight mb-1 cursor-pointer hover:text-primary transition-colors"
-                    >
-                      {product.name}
-                    </h3>
-                    <p className="text-sm text-gray-500 line-clamp-2 mb-4 flex-1">{product.description}</p>
-                    
-                    <div className="space-y-2 mb-5 bg-gray-50 p-3 rounded-lg">
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Retail</span>
-                        <span className="text-lg font-bold text-primary">${product.retailPrice?.toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between items-center pt-2 border-t border-gray-200">
-                        <span className="text-xs font-medium text-gray-500 uppercase tracking-wider flex items-center gap-1">
-                          B2B <span className="bg-purple-100 text-purple-700 text-[10px] px-1.5 py-0.5 rounded font-bold">PRO</span>
-                        </span>
-                        <span className="text-base font-bold text-gray-900">${product.wholesalePrice?.toFixed(2)}</span>
-                      </div>
-                    </div>
-                    
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        addToCart(product);
-                      }}
-                      disabled={isOutOfStock}
-                      className={`w-full font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 ${
-                        isOutOfStock 
-                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                          : 'bg-primary hover:bg-primary-hover text-white shadow-[0_0_10px_rgba(37,99,235,0.2)] active:scale-[0.98]'
-                      }`}>
-                      <ShoppingCart className="w-4 h-4" />
-                      <span>{isOutOfStock ? 'Sold Out' : 'Add to Cart'}</span>
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+            {products.map((product) => (
+              <ProductCard 
+                key={product.id} 
+                product={product} 
+                onSelect={openProduct} 
+                showB2BPrice={true}
+              />
+            ))}
           </div>
         )}
       </div>
