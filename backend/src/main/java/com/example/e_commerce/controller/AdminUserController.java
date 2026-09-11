@@ -36,13 +36,12 @@ public class AdminUserController {
     public ResponseEntity<Page<User>> getUsers(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) User.Role role,
-            @RequestParam(required = false) User.CustomerGroup customerGroup,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         String safeSearch = search == null ? "" : search;
-        return ResponseEntity.ok(userRepository.searchUsers(safeSearch, role, customerGroup, pageable));
+        return ResponseEntity.ok(userRepository.searchUsers(safeSearch, role, pageable));
     }
 
     @PutMapping("/{id}/role")
@@ -63,15 +62,6 @@ public class AdminUserController {
         }
 
         user.setRole(request.getRole());
-        return ResponseEntity.ok(userRepository.save(user));
-    }
-
-    @PutMapping("/{id}/customer-group")
-    public ResponseEntity<User> updateCustomerGroup(@PathVariable Long id, @RequestBody CustomerGroupUpdateRequest request) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-
-        user.setCustomerGroup(request.getCustomerGroup());
         return ResponseEntity.ok(userRepository.save(user));
     }
 
@@ -99,11 +89,6 @@ public class AdminUserController {
     @Data
     public static class RoleUpdateRequest {
         private User.Role role;
-    }
-
-    @Data
-    public static class CustomerGroupUpdateRequest {
-        private User.CustomerGroup customerGroup;
     }
 
     @Data

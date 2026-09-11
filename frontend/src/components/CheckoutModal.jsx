@@ -5,7 +5,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
 const CheckoutModal = ({ isOpen, onClose }) => {
-  const { cartItems, getCartTotal, clearCart, isWholesale } = useCart();
+  const { cartItems, getCartTotal, clearCart, isAdmin } = useCart();
   const { user } = useAuth();
   
   const [formData, setFormData] = useState({

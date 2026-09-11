@@ -23,5 +23,33 @@ public class SchemaMigrationRunner implements CommandLineRunner {
         } catch (Exception e) {
             logger.warn("Schema Migration Notice: {}", e.getMessage());
         }
+
+        try {
+            jdbcTemplate.execute("ALTER TABLE product ALTER COLUMN wholesale_price DROP NOT NULL;");
+            logger.info("Schema Migration: wholesale_price NOT NULL constraint dropped.");
+        } catch (Exception e) {
+            logger.warn("Schema Migration Notice (wholesale_price DROP NOT NULL): {}", e.getMessage());
+        }
+
+        try {
+            jdbcTemplate.execute("ALTER TABLE product DROP COLUMN IF EXISTS wholesale_price;");
+            logger.info("Schema Migration: wholesale_price column dropped successfully.");
+        } catch (Exception e) {
+            logger.warn("Schema Migration Notice (wholesale_price DROP COLUMN): {}", e.getMessage());
+        }
+
+        try {
+            jdbcTemplate.execute("ALTER TABLE product ALTER COLUMN admin_price DROP NOT NULL;");
+            logger.info("Schema Migration: admin_price NOT NULL constraint dropped.");
+        } catch (Exception e) {
+            logger.warn("Schema Migration Notice (admin_price DROP NOT NULL): {}", e.getMessage());
+        }
+
+        try {
+            jdbcTemplate.execute("ALTER TABLE product DROP COLUMN IF EXISTS admin_price;");
+            logger.info("Schema Migration: admin_price column dropped successfully.");
+        } catch (Exception e) {
+            logger.warn("Schema Migration Notice (admin_price DROP COLUMN): {}", e.getMessage());
+        }
     }
 }

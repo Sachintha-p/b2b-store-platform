@@ -12,7 +12,7 @@ import lombok.Data;
 public class User {
 
     public enum CustomerGroup {
-        RETAIL, WHOLESALE
+        RETAIL
     }
 
     public enum AuthProvider {

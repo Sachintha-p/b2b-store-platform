@@ -114,7 +114,6 @@ public class ProductController {
                     existing.setName(productDetails.getName());
                     existing.setDescription(productDetails.getDescription());
                     existing.setRetailPrice(productDetails.getRetailPrice());
-                    existing.setWholesalePrice(productDetails.getWholesalePrice());
                     existing.setStockQuantity(productDetails.getStockQuantity());
                     existing.setCategory(productDetails.getCategory());
                     // Never overwrite imageUrl or isArchived via PUT body

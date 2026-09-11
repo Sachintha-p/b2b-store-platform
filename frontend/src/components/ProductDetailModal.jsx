@@ -67,16 +67,10 @@ const ProductDetailModal = ({ product, isOpen, onClose, onSelectProduct }) => {
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">{product.name}</h2>
                 <p className="text-gray-600 mb-6 leading-relaxed">{product.description}</p>
                 
-                <div className="space-y-3 mb-8 bg-gray-50 p-4 rounded-xl">
+                <div className="mb-8 bg-gray-50 p-4 rounded-xl">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">Retail Price</span>
-                    <span className="text-xl font-bold text-primary">${product.retailPrice?.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between items-center pt-3 border-t border-gray-200">
-                    <span className="text-sm font-medium text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
-                      B2B Price <span className="bg-purple-100 text-purple-700 text-[10px] px-1.5 py-0.5 rounded font-bold">PRO</span>
-                    </span>
-                    <span className="text-xl font-bold text-gray-900">${product.wholesalePrice?.toFixed(2)}</span>
+                    <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">Price</span>
+                    <span className="text-xl font-bold text-gray-900">${product.retailPrice?.toFixed(2)}</span>
                   </div>
                 </div>
                 

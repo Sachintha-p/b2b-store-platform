@@ -61,10 +61,10 @@ const UserMenu = () => {
           <div className="px-4 py-3 border-b border-gray-100">
             <p className="text-sm font-bold text-gray-900 truncate">{user.name}</p>
             <p className="text-xs text-gray-500 truncate mt-0.5">{user.email}</p>
-            {user.customerGroup === 'WHOLESALE' && (
+            {user.role === 'ADMIN' && (
               <div className="mt-2 inline-flex items-center gap-1 bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide">
                 <Shield className="w-3 h-3" />
-                Wholesale Account
+                Admin Account
               </div>
             )}
           </div>

@@ -125,7 +125,7 @@ const ProductList = () => {
         <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">Product Catalog</h2>
-            <p className="mt-1 text-gray-600">Browse our selection for retail and wholesale.</p>
+            <p className="mt-1 text-gray-600">Browse our selection for retail and admin.</p>
           </div>
           
           {/* Search Bar */}

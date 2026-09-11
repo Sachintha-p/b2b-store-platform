@@ -125,8 +125,8 @@ const Home = () => {
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">Our Global Marketplace</span>
           </h1>
           <p className="text-gray-200 text-xs md:text-sm max-w-xl mb-5 font-medium drop-shadow-md">
-            From everyday essentials to bulk business solutions â€” find everything you need, in one place. 
-            Sign up for a business account to unlock wholesale pricing.
+            From everyday essentials to bulk business solutions — find everything you need, in one place. 
+            Sign up for an account to unlock special admin pricing.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto mb-5">
             <Link to="/products" className="bg-primary hover:bg-primary-hover text-white font-bold py-2.5 px-6 rounded-lg transition-all shadow-[0_0_15px_rgba(37,99,235,0.5)] hover:shadow-[0_0_25px_rgba(37,99,235,0.7)] flex items-center justify-center gap-2 text-sm">
@@ -174,8 +174,7 @@ const Home = () => {
               
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 {continueShoppingProducts.map(product => {
-                  const isB2B = user?.customerGroup === 'WHOLESALE';
-                  const displayPrice = isB2B ? product.wholesalePrice : product.retailPrice;
+                  const displayPrice = product.retailPrice;
                   
                   return (
                     <div key={product.id} className="bg-gray-50 rounded-2xl p-4 flex flex-col hover:bg-gray-100 transition-colors cursor-pointer border border-transparent hover:border-gray-200" onClick={() => navigate(`/products?category=${encodeURIComponent(product.category)}`)}>
@@ -272,7 +271,7 @@ const Home = () => {
               <Tag className="w-6 h-6" />
             </div>
             <h4 className="font-bold text-gray-900 mb-2">Flexible Pricing</h4>
-            <p className="text-sm text-gray-500">Special wholesale rates for registered business accounts and bulk orders.</p>
+            <p className="text-sm text-gray-500">Special admin rates for verified administrator accounts and bulk orders.</p>
           </div>
           <div className="flex flex-col items-center text-center">
             <div className="bg-emerald-50 text-emerald-600 p-4 rounded-full mb-4">

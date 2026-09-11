@@ -20,9 +20,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     
     @Query("SELECT u FROM User u WHERE " +
            "(:search = '' OR LOWER(u.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%'))) AND " +
-           "(:role IS NULL OR u.role = :role) AND " +
-           "(:customerGroup IS NULL OR u.customerGroup = :customerGroup)")
-    Page<User> searchUsers(String search, User.Role role, User.CustomerGroup customerGroup, Pageable pageable);
+           "(:role IS NULL OR u.role = :role)")
+    Page<User> searchUsers(String search, User.Role role, Pageable pageable);
     
     @Modifying
     @Query("UPDATE User u SET u.role = 'USER' WHERE u.role IS NULL")

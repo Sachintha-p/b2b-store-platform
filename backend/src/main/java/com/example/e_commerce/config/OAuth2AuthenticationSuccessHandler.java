@@ -40,7 +40,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             newUser.setEmail(email);
             newUser.setProvider(User.AuthProvider.GOOGLE);
             newUser.setProviderId(googleId);
-            newUser.setCustomerGroup(User.CustomerGroup.RETAIL);
             // passwordHash stays null for Google users
             return userRepository.save(newUser);
         });

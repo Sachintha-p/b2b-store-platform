@@ -55,7 +55,6 @@ public class OrderControllerTest {
         mockProduct.setId(1L);
         mockProduct.setName("Test Product");
         mockProduct.setRetailPrice(new BigDecimal("10.00"));
-        mockProduct.setWholesalePrice(new BigDecimal("8.00"));
         mockProduct.setStockQuantity(100);
     }
 
@@ -92,10 +91,10 @@ public class OrderControllerTest {
     }
 
     @Test
-    void testCreateOrder_WholesaleUser_FailsMOQ() {
+    void testCreateOrder_AdminUser_FailsMOQ() {
         OrderRequest req = new OrderRequest();
-        req.setName("Wholesale User");
-        req.setEmail("wholesale@test.com");
+        req.setName("Admin User");
+        req.setEmail("admin@test.com");
         
         OrderItemRequest itemReq = new OrderItemRequest();
         itemReq.setProductId(1L);
@@ -106,10 +105,10 @@ public class OrderControllerTest {
         when(jwtUtil.validateToken("mock-token")).thenReturn(true);
         when(jwtUtil.extractUserId("mock-token")).thenReturn(2L);
         
-        User wholesaleUser = new User();
-        wholesaleUser.setId(2L);
-        wholesaleUser.setCustomerGroup(User.CustomerGroup.WHOLESALE);
-        when(userRepository.findById(2L)).thenReturn(Optional.of(wholesaleUser));
+        User adminUser = new User();
+        adminUser.setId(2L);
+        adminUser.setRole(User.Role.ADMIN);
+        when(userRepository.findById(2L)).thenReturn(Optional.of(adminUser));
         
         when(productRepository.findById(1L)).thenReturn(Optional.of(mockProduct));
 

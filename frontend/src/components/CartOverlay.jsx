@@ -4,7 +4,7 @@ import { useCart } from '../context/CartContext';
 import CheckoutModal from './CheckoutModal';
 
 const CartOverlay = () => {
-  const { cartItems, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, getCartTotal, isWholesale } = useCart();
+  const { cartItems, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, getCartTotal, isAdmin } = useCart();
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   if (!isCartOpen && !isCheckoutOpen) return null;
@@ -52,7 +52,7 @@ const CartOverlay = () => {
                       <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-semibold text-gray-900 truncate">{item.name}</h3>
                         <p className="text-sm font-medium text-primary mt-1">
-                          ${(isWholesale ? item.wholesalePrice : item.retailPrice).toFixed(2)}
+                          ${(item.retailPrice || 0).toFixed(2)}
                         </p>
                       </div>
                       

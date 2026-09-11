@@ -138,7 +138,7 @@ public class OrderController {
         order.setCustomerEmail(orderRequest.getEmail());
         order.setShippingAddress(orderRequest.getShippingAddress());
         
-        boolean isWholesaleUser = false;
+        boolean isAdminUser = false;
         
         // Link to user if token is present
         String authHeader = request.getHeader("Authorization");
@@ -152,8 +152,8 @@ public class OrderController {
             }
         }
         
-        if (order.getUser() != null && order.getUser().getCustomerGroup() == com.example.e_commerce.model.User.CustomerGroup.WHOLESALE) {
-            isWholesaleUser = true;
+        if (order.getUser() != null && order.getUser().getRole() == com.example.e_commerce.model.User.Role.ADMIN) {
+            isAdminUser = true;
         }
 
         BigDecimal subtotal = BigDecimal.ZERO;
@@ -169,8 +169,7 @@ public class OrderController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient stock for product: " + product.getName());
             }
 
-            // Price is derived strictly from the authenticated user's database CustomerGroup (WHOLESALE vs RETAIL)
-            BigDecimal price = isWholesaleUser ? product.getWholesalePrice() : product.getRetailPrice();
+            BigDecimal price = product.getRetailPrice();
 
             OrderItem orderItem = new OrderItem();
             orderItem.setProduct(product);
@@ -183,9 +182,9 @@ public class OrderController {
             subtotal = subtotal.add(itemTotal);
         }
         
-        // Enforce Wholesale Minimum Order Quantity
-        if (isWholesaleUser && totalQuantity < 5) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wholesale customers must order a minimum of 5 items total.");
+        // Enforce Admin Minimum Order Quantity
+        if (isAdminUser && totalQuantity < 5) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Admin customers must order a minimum of 5 items total.");
         }
         
         // Handle Coupon

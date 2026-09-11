@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
@@ -60,8 +60,8 @@ const Profile = () => {
             </div>
             <div className="flex items-center gap-3 text-sm">
               <Tag className="w-4 h-4 text-gray-400" />
-              <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold ${user.customerGroup === 'WHOLESALE' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'}`}>
-                {user.customerGroup} CUSTOMER
+              <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold ${user.role === 'ADMIN' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'}`}>
+                {user.role === 'ADMIN' ? 'ADMIN ACCOUNT' : 'STANDARD USER'}
               </span>
             </div>
             <div className="flex items-center gap-3 text-sm">

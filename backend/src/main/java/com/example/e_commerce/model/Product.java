@@ -32,10 +32,6 @@ public class Product {
     @PositiveOrZero(message = "Retail price must be zero or positive")
     private BigDecimal retailPrice;
 
-    @NotNull(message = "Wholesale price is required")
-    @PositiveOrZero(message = "Wholesale price must be zero or positive")
-    private BigDecimal wholesalePrice;
-
     @NotNull(message = "Stock quantity is required")
     @PositiveOrZero(message = "Stock quantity must be zero or positive")
     private Integer stockQuantity;

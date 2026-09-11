@@ -18,7 +18,6 @@ const AdminInventory = () => {
     category: '',
     description: '',
     retailPrice: '',
-    wholesalePrice: '',
     stockQuantity: ''
   });
   const [selectedImage, setSelectedImage] = useState(null);
@@ -70,7 +69,6 @@ const AdminInventory = () => {
         category: product.category || '',
         description: product.description || '',
         retailPrice: product.retailPrice || '',
-        wholesalePrice: product.wholesalePrice || '',
         stockQuantity: product.stockQuantity || ''
       });
       setImagePreview(product.imageUrl || null);
@@ -82,7 +80,6 @@ const AdminInventory = () => {
         category: '',
         description: '',
         retailPrice: '',
-        wholesalePrice: '',
         stockQuantity: ''
       });
       setImagePreview(null);
@@ -225,7 +222,6 @@ const AdminInventory = () => {
         category: formData.category,
         description: formData.description,
         retailPrice: parseFloat(formData.retailPrice),
-        wholesalePrice: parseFloat(formData.wholesalePrice),
         stockQuantity: parseInt(formData.stockQuantity, 10)
       };
 
@@ -740,7 +736,7 @@ const AdminInventory = () => {
                 </div>
 
                 <div className="col-span-2 sm:col-span-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Retail Price ($)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Price ($)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -748,19 +744,6 @@ const AdminInventory = () => {
                     required
                     value={formData.retailPrice}
                     onChange={(e) => setFormData({...formData, retailPrice: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
-                    placeholder="0.00"
-                  />
-                </div>
-                <div className="col-span-2 sm:col-span-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Wholesale Price ($)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    required
-                    value={formData.wholesalePrice}
-                    onChange={(e) => setFormData({...formData, wholesalePrice: e.target.value})}
                     className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                     placeholder="0.00"
                   />

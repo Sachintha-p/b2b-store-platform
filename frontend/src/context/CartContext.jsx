@@ -6,7 +6,7 @@ const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const { user } = useAuth(); // Access current user to check for WHOLESALE tier
+  const { user } = useAuth(); // Access current user to check for ADMIN tier
 
   // Load from local storage
   useEffect(() => {
@@ -53,11 +53,11 @@ export const CartProvider = ({ children }) => {
 
   const getCartCount = () => cartItems.reduce((total, item) => total + item.quantity, 0);
 
-  const isWholesale = user?.customerGroup === 'WHOLESALE';
+  const isAdmin = user?.role === 'ADMIN';
 
   const getCartTotal = () => {
     return cartItems.reduce((total, item) => {
-      const price = isWholesale ? item.wholesalePrice : item.retailPrice;
+      const price = item.retailPrice || 0;
       return total + (price * item.quantity);
     }, 0);
   };
@@ -69,7 +69,7 @@ export const CartProvider = ({ children }) => {
       cartItems,
       isCartOpen,
       setIsCartOpen,
-      isWholesale,
+      isAdmin,
       addToCart,
       removeFromCart,
       updateQuantity,
