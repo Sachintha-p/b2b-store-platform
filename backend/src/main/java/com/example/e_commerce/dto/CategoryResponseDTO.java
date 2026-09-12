@@ -4,17 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryCountDTO {
+public class CategoryResponseDTO {
+    private Long id;
     private String name;
-    private Long count;
     private String imageUrl;
-
-    public CategoryCountDTO(String name, Long count) {
-        this.name = name;
-        this.count = count;
-        this.imageUrl = null;
-    }
+    private String imagePublicId;
+    private LocalDateTime createdAt;
+    private long productCount;
 }

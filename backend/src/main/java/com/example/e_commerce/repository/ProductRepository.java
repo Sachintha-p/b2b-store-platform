@@ -34,9 +34,19 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     // Count only active (non-archived) low-stock products for admin stats
     long countByStockQuantityLessThanAndIsArchivedFalse(Integer threshold);
 
-    @Query("SELECT new com.example.e_commerce.dto.CategoryCountDTO(p.category, COUNT(p)) FROM Product p WHERE p.stockQuantity > 0 AND p.isArchived = false GROUP BY p.category")
+    @Query("SELECT new com.example.e_commerce.dto.CategoryCountDTO(c.name, COUNT(p), c.imageUrl) " +
+           "FROM Category c LEFT JOIN Product p ON LOWER(p.category) = LOWER(c.name) AND p.stockQuantity > 0 AND p.isArchived = false " +
+           "GROUP BY c.id, c.name, c.imageUrl")
     List<com.example.e_commerce.dto.CategoryCountDTO> getCategoryCounts();
 
     // Used by home page featured products
     List<Product> findTop8ByIsArchivedFalseOrderByCreatedAtDesc();
+
+    long countByCategoryIgnoreCase(String category);
+
+    @Query("SELECT DISTINCT p.category FROM Product p WHERE p.category IS NOT NULL AND TRIM(p.category) <> ''")
+    List<String> findDistinctCategories();
+
+    @Query("SELECT COUNT(p) FROM Product p WHERE LOWER(p.category) = LOWER(:categoryName) AND p.stockQuantity > 0 AND p.isArchived = false")
+    long countActiveProductsByCategoryName(@Param("categoryName") String categoryName);
 }

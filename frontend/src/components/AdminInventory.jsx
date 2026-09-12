@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Package, AlertTriangle, Edit2, Trash2, Plus, Upload, X, Image as ImageIcon, Star, Loader2 } from 'lucide-react';
+import { Package, AlertTriangle, Edit2, Trash2, Plus, Upload, X, Image as ImageIcon, Star, Loader2, Tag, ChevronDown, Search, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../api';
 
@@ -33,6 +33,67 @@ const AdminInventory = () => {
   const [addFilePreviews, setAddFilePreviews] = useState([]);
   const [addCoverIndex, setAddCoverIndex] = useState(0);
 
+  // Category management state
+  const [categories, setCategories] = useState([]);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [categoryError, setCategoryError] = useState('');
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [uploadingCategoryId, setUploadingCategoryId] = useState(null);
+
+  const handleCategoryUploadImage = async (categoryId, file) => {
+    if (!file) return;
+    const form = new FormData();
+    form.append('file', file);
+    setUploadingCategoryId(categoryId);
+    setCategoryError('');
+    try {
+      await api.post(`/admin/categories/${categoryId}/image`, form, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      await fetchCategories();
+      window.dispatchEvent(new Event('categories-updated'));
+    } catch (err) {
+      console.error("Failed to upload category image", err);
+      setCategoryError(err.response?.data?.message || "Failed to upload category image.");
+    } finally {
+      setUploadingCategoryId(null);
+    }
+  };
+
+  const handleCategoryDeleteImage = async (categoryId) => {
+    setUploadingCategoryId(categoryId);
+    setCategoryError('');
+    try {
+      await api.delete(`/admin/categories/${categoryId}/image`);
+      await fetchCategories();
+      window.dispatchEvent(new Event('categories-updated'));
+    } catch (err) {
+      console.error("Failed to delete category image", err);
+      setCategoryError(err.response?.data?.message || "Failed to delete category image.");
+    } finally {
+      setUploadingCategoryId(null);
+    }
+  };
+
+  // Product Form Combobox state
+  const [categorySearch, setCategorySearch] = useState('');
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+  const [categoryFormError, setCategoryFormError] = useState('');
+
+  const fetchCategories = async () => {
+    try {
+      const response = await api.get('/admin/categories');
+      const adminCats = (response.data || []).map(cat => ({
+        ...cat,
+        count: cat.productCount !== undefined ? cat.productCount : 0
+      }));
+      setCategories(adminCats);
+    } catch (err) {
+      console.error("Failed to fetch categories", err);
+    }
+  };
+
   const fetchProducts = async () => {
     try {
       setLoading(true);
@@ -59,9 +120,14 @@ const AdminInventory = () => {
 
   useEffect(() => {
     fetchProducts();
+    fetchCategories();
   }, []);
 
   const handleOpenModal = (product = null) => {
+    fetchCategories();
+    setCategoryFormError('');
+    setCategorySearch('');
+    setIsCategoryDropdownOpen(false);
     if (product) {
       setEditingProduct(product);
       setFormData({
@@ -215,6 +281,11 @@ const AdminInventory = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    if (!formData.category || !formData.category.trim()) {
+      setCategoryFormError('Category is required. Please select an existing category.');
+      return;
+    }
+    setCategoryFormError('');
     setIsSubmitting(true);
     try {
       const payload = {
@@ -374,13 +445,25 @@ const AdminInventory = () => {
             <Package className="w-5 h-5 text-gray-500" />
             <h3 className="text-lg font-bold text-gray-900">Inventory Status</h3>
           </div>
-          <button 
-            onClick={() => handleOpenModal()}
-            className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-dark transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            Add Product
-          </button>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => {
+                setCategoryError('');
+                setIsCategoryModalOpen(true);
+              }}
+              className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg font-medium transition-colors text-sm shadow-sm"
+            >
+              <Tag className="w-4 h-4 text-primary" />
+              Manage Categories
+            </button>
+            <button 
+              onClick={() => handleOpenModal()}
+              className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-dark transition-colors text-sm"
+            >
+              <Plus className="w-4 h-4" />
+              Add Product
+            </button>
+          </div>
         </div>
         
         <div className="overflow-x-auto">
@@ -707,15 +790,87 @@ const AdminInventory = () => {
                     placeholder="E.g. Premium Office Chair"
                   />
                 </div>
-                <div className="col-span-2 sm:col-span-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                  <input
-                    type="text"
-                    value={formData.category}
-                    onChange={(e) => setFormData({...formData, category: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
-                    placeholder="E.g. Furniture"
-                  />
+                {/* Searchable Category Combobox Dropdown */}
+                <div className="col-span-2 sm:col-span-1 relative">
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Category <span className="text-red-500">*</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCategoryError('');
+                        setIsCategoryModalOpen(true);
+                      }}
+                      className="text-xs text-primary hover:underline font-semibold"
+                    >
+                      + Manage Categories
+                    </button>
+                  </div>
+
+                  <div className="relative">
+                    <div
+                      onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                      className={`w-full px-4 py-2 border rounded-lg flex items-center justify-between cursor-pointer bg-white transition-all ${
+                        categoryFormError ? 'border-red-500 ring-2 ring-red-100' : 'border-gray-200 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary'
+                      }`}
+                    >
+                      <span className={formData.category ? 'text-gray-900 font-medium text-sm' : 'text-gray-400 text-sm'}>
+                        {formData.category || 'Select a Category...'}
+                      </span>
+                      <ChevronDown className="w-4 h-4 text-gray-400" />
+                    </div>
+
+                    {/* Dropdown Menu */}
+                    {isCategoryDropdownOpen && (
+                      <div className="absolute z-30 left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl p-2">
+                        <div className="relative mb-2">
+                          <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
+                          <input
+                            type="text"
+                            value={categorySearch}
+                            onChange={(e) => setCategorySearch(e.target.value)}
+                            placeholder="Type to filter..."
+                            className="w-full pl-9 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg outline-none focus:border-primary"
+                            onClick={(e) => e.stopPropagation()}
+                            autoFocus
+                          />
+                        </div>
+
+                        <div className="space-y-0.5 max-h-44 overflow-y-auto">
+                          {categories
+                            .filter((c) => c.name.toLowerCase().includes(categorySearch.toLowerCase()))
+                            .map((c) => (
+                              <div
+                                key={c.id || c.name}
+                                onClick={() => {
+                                  setFormData({ ...formData, category: c.name });
+                                  setCategoryFormError('');
+                                  setIsCategoryDropdownOpen(false);
+                                  setCategorySearch('');
+                                }}
+                                className={`px-3 py-2 text-sm rounded-lg cursor-pointer flex justify-between items-center transition-colors ${
+                                  formData.category === c.name ? 'bg-primary-light text-primary font-bold' : 'hover:bg-gray-50 text-gray-700'
+                                }`}
+                              >
+                                <span>{c.name}</span>
+                                {formData.category === c.name && <Check className="w-4 h-4 text-primary" />}
+                              </div>
+                            ))}
+
+                          {categories.filter((c) => c.name.toLowerCase().includes(categorySearch.toLowerCase())).length === 0 && (
+                            <div className="p-3 text-xs text-center text-gray-400 font-medium">
+                              No matching category. Use "Manage Categories" to add new ones.
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {categoryFormError && (
+                    <p className="text-xs text-red-500 font-medium mt-1">{categoryFormError}</p>
+                  )}
                 </div>
                 
                 <div className="col-span-2">
@@ -780,6 +935,175 @@ const AdminInventory = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* MANAGE CATEGORIES MODAL */}
+      {isCategoryModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh]">
+            <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
+              <div className="flex items-center gap-2">
+                <Tag className="w-5 h-5 text-primary" />
+                <h2 className="text-xl font-bold text-gray-900">Manage Categories</h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsCategoryModalOpen(false);
+                  setCategoryError('');
+                  setNewCategoryName('');
+                }}
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-6 overflow-y-auto flex-1">
+              {/* Inline Error Alert */}
+              {categoryError && (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3 text-red-700 text-sm font-medium">
+                  <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                  <div className="flex-1 leading-relaxed">{categoryError}</div>
+                  <button type="button" onClick={() => setCategoryError('')} className="text-red-400 hover:text-red-600">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+
+              {/* Add Category Form */}
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  if (!newCategoryName.trim()) return;
+                  setIsAddingCategory(true);
+                  setCategoryError('');
+                  try {
+                    await api.post('/admin/categories', { name: newCategoryName.trim() });
+                    setNewCategoryName('');
+                    await fetchCategories();
+                    window.dispatchEvent(new Event('categories-updated'));
+                  } catch (err) {
+                    console.error("Failed to create category", err);
+                    setCategoryError(err.response?.data?.message || "Failed to create category.");
+                  } finally {
+                    setIsAddingCategory(false);
+                  }
+                }}
+                className="flex gap-2"
+              >
+                <input
+                  type="text"
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  placeholder="New Category Name (e.g. Tools)"
+                  className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  required
+                />
+                <button
+                  type="submit"
+                  disabled={isAddingCategory || !newCategoryName.trim()}
+                  className="bg-primary hover:bg-primary-hover text-white text-sm font-bold px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5 disabled:opacity-50"
+                >
+                  {isAddingCategory ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                  Add
+                </button>
+              </form>
+
+              {/* Category List */}
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Existing Categories</h3>
+                <div className="divide-y divide-gray-100 border border-gray-100 rounded-xl overflow-hidden max-h-64 overflow-y-auto">
+                  {categories.length === 0 ? (
+                    <div className="p-4 text-center text-sm text-gray-400">No categories found.</div>
+                  ) : (
+                    categories.map((c) => (
+                      <div key={c.id || c.name} className="p-3 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                        <div className="flex items-center gap-3">
+                          {/* Image Thumbnail & Upload/Remove Control */}
+                          <div className="relative w-10 h-10 rounded-full border border-gray-200 bg-gray-50 flex items-center justify-center overflow-hidden flex-shrink-0 group">
+                            {uploadingCategoryId === c.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                            ) : c.imageUrl ? (
+                              <>
+                                <img src={c.imageUrl} alt={c.name} className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleCategoryDeleteImage(c.id)}
+                                    className="p-1 text-white hover:text-red-400 transition-colors"
+                                    title="Remove Image"
+                                  >
+                                    <X className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </>
+                            ) : (
+                              <label className="cursor-pointer w-full h-full flex items-center justify-center hover:bg-gray-100 transition-colors" title="Upload Category Image">
+                                <ImageIcon className="w-4 h-4 text-gray-400 hover:text-primary transition-colors" />
+                                <input
+                                  type="file"
+                                  accept="image/jpeg, image/png, image/webp"
+                                  className="hidden"
+                                  onChange={(e) => {
+                                    if (e.target.files && e.target.files[0]) {
+                                      handleCategoryUploadImage(c.id, e.target.files[0]);
+                                    }
+                                  }}
+                                />
+                              </label>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-gray-900 text-sm">{c.name}</span>
+                            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium">
+                              {c.count} product{c.count === 1 ? '' : 's'}
+                            </span>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            if (window.confirm(`Are you sure you want to delete category '${c.name}'?`)) {
+                              setCategoryError('');
+                              try {
+                                await api.delete(`/admin/categories/${c.id}`);
+                                await fetchCategories();
+                                window.dispatchEvent(new Event('categories-updated'));
+                              } catch (err) {
+                                console.error("Failed to delete category", err);
+                                setCategoryError(err.response?.data?.message || `Failed to delete category '${c.name}'.`);
+                              }
+                            }
+                          }}
+                          className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Delete Category"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsCategoryModalOpen(false);
+                  setCategoryError('');
+                  setNewCategoryName('');
+                }}
+                className="px-5 py-2 bg-white border border-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-100 transition-colors text-sm shadow-sm"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

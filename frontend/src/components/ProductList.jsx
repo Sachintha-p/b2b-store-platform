@@ -26,6 +26,10 @@ const ProductList = () => {
     if (cat) {
       setCategory(cat);
     }
+    const searchVal = searchParams.get('search') || searchParams.get('query') || searchParams.get('q');
+    if (searchVal) {
+      setQuery(searchVal);
+    }
   }, [location.search]);
 
   // Modal State

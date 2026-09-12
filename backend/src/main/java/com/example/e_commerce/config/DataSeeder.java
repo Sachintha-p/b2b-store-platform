@@ -26,6 +26,7 @@ public class DataSeeder implements CommandLineRunner {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
+    private final com.example.e_commerce.repository.CategoryRepository categoryRepository;
     
     private static final Logger logger = LoggerFactory.getLogger(DataSeeder.class);
     
@@ -103,6 +104,28 @@ public class DataSeeder implements CommandLineRunner {
 
             productRepository.saveAll(List.of(p1, p2, p3, p4));
             System.out.println("Seeded 4 sample products into the database.");
+        }
+
+        // 4. Migrate DISTINCT Product.category values to Category records
+        List<String> distinctCategories = productRepository.findDistinctCategories();
+        for (String catName : distinctCategories) {
+            if (catName != null && !catName.isBlank()) {
+                String cleanName = catName.trim();
+                if (!categoryRepository.existsByNameIgnoreCase(cleanName)) {
+                    categoryRepository.save(new com.example.e_commerce.model.Category(cleanName));
+                    logger.info("Migrated product category to Category table: '{}'", cleanName);
+                }
+            }
+        }
+
+        // 5. Seed default fallback categories if Category repository is empty
+        if (categoryRepository.count() == 0) {
+            List<String> defaults = List.of("Electronics", "Furniture", "Accessories", "Fashion");
+            for (String defCat : defaults) {
+                if (!categoryRepository.existsByNameIgnoreCase(defCat)) {
+                    categoryRepository.save(new com.example.e_commerce.model.Category(defCat));
+                }
+            }
         }
     }
 }

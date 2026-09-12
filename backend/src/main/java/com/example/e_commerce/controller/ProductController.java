@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,6 +23,7 @@ public class ProductController {
 
     private final ProductRepository productRepository;
     private final ProductImageRepository productImageRepository;
+    private final com.example.e_commerce.repository.CategoryRepository categoryRepository;
     private final Cloudinary cloudinary;
 
     // ---- Public READ endpoints ----
@@ -65,8 +67,21 @@ public class ProductController {
     }
 
     @GetMapping("/categories")
-    public List<com.example.e_commerce.dto.CategoryCountDTO> getCategories() {
-        return productRepository.getCategoryCounts();
+    public List<com.example.e_commerce.dto.CategoryCountDTO> getCategories(
+            @RequestParam(required = false) Integer limit) {
+        List<com.example.e_commerce.dto.CategoryCountDTO> list = categoryRepository.findAll().stream()
+                .map(cat -> new com.example.e_commerce.dto.CategoryCountDTO(
+                        cat.getName(),
+                        productRepository.countActiveProductsByCategoryName(cat.getName()),
+                        cat.getImageUrl()
+                ))
+                .sorted((a, b) -> Long.compare(b.getCount(), a.getCount()))
+                .toList();
+
+        if (limit != null && limit > 0 && limit < list.size()) {
+            return list.subList(0, limit);
+        }
+        return list;
     }
 
     @GetMapping("/{id}/related")
@@ -102,6 +117,16 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) {
+        if (product.getCategory() == null || product.getCategory().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category is required.");
+        }
+        String categoryName = product.getCategory().trim();
+        if (!categoryRepository.existsByNameIgnoreCase(categoryName)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                    "Invalid category: '" + categoryName + "'. Category must be an existing managed category.");
+        }
+
+        product.setCategory(categoryName);
         product.setIsArchived(false);
         Product savedProduct = productRepository.save(product);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
@@ -109,13 +134,22 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Long id, @Valid @RequestBody Product productDetails) {
+        if (productDetails.getCategory() == null || productDetails.getCategory().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category is required.");
+        }
+        String categoryName = productDetails.getCategory().trim();
+        if (!categoryRepository.existsByNameIgnoreCase(categoryName)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                    "Invalid category: '" + categoryName + "'. Category must be an existing managed category.");
+        }
+
         return productRepository.findById(id)
                 .map(existing -> {
                     existing.setName(productDetails.getName());
                     existing.setDescription(productDetails.getDescription());
                     existing.setRetailPrice(productDetails.getRetailPrice());
                     existing.setStockQuantity(productDetails.getStockQuantity());
-                    existing.setCategory(productDetails.getCategory());
+                    existing.setCategory(categoryName);
                     // Never overwrite imageUrl or isArchived via PUT body
                     return ResponseEntity.ok(productRepository.save(existing));
                 })
