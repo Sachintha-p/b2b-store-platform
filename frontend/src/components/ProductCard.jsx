@@ -64,14 +64,14 @@ const ProductCard = ({ product, onSelect, showB2BPrice = true }) => {
 
   return (
     <div 
-      className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col group relative"
+      className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col group relative z-0 isolate"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {/* Product Image Area */}
       <div 
         onClick={() => onSelect && onSelect(product)}
-        className="w-full h-48 bg-gray-50 relative group-hover:bg-gray-100 transition-colors duration-300 flex items-center justify-center cursor-pointer overflow-hidden rounded-t-2xl"
+        className="w-full h-36 bg-gray-50 relative group-hover:bg-gray-100 transition-colors duration-300 flex items-center justify-center cursor-pointer overflow-hidden rounded-t-2xl"
       >
         {images.length > 0 ? (
           <div className="w-full h-full relative overflow-hidden">
@@ -87,11 +87,11 @@ const ProductCard = ({ product, onSelect, showB2BPrice = true }) => {
             ))}
           </div>
         ) : (
-          <Package className="w-16 h-16 text-gray-300 group-hover:text-gray-400 transition-colors" />
+          <Package className="w-12 h-12 text-gray-300 group-hover:text-gray-400 transition-colors" />
         )}
 
         {/* Stock Status Badge */}
-        <span className={`absolute top-3 right-3 z-20 text-xs font-bold px-2.5 py-1 rounded-full shadow-sm backdrop-blur ${
+        <span className={`absolute top-2 right-2 z-20 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm backdrop-blur ${
           isOutOfStock ? 'bg-red-500/90 text-white' : 'bg-white/90 text-gray-700'
         }`}>
           {isOutOfStock ? 'Out of Stock' : `Stock: ${product.stockQuantity}`}
@@ -99,21 +99,21 @@ const ProductCard = ({ product, onSelect, showB2BPrice = true }) => {
 
         {/* Category Badge */}
         {product.category ? (
-          <span className="absolute top-3 left-3 z-20 bg-white/90 backdrop-blur text-xs font-semibold px-2 py-1 rounded-md shadow-sm text-gray-500">
+          <span className="absolute top-2 left-2 z-20 bg-white/90 backdrop-blur text-[10px] font-semibold px-1.5 py-0.5 rounded-md shadow-sm text-gray-500">
             {product.category}
           </span>
         ) : null}
 
         {/* Hover Carousel Indicator Dots */}
         {hasMultipleImages && isHovered && (
-          <div className="absolute bottom-2 inset-x-0 z-20 flex justify-center gap-1.5 px-2 pointer-events-none">
+          <div className="absolute bottom-1.5 inset-x-0 z-20 flex justify-center gap-1 px-2 pointer-events-none">
             {images.map((_, idx) => (
               <div
                 key={idx}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
+                className={`h-1 rounded-full transition-all duration-300 ${
                   idx === activeIndex
-                    ? 'w-4 bg-white shadow-md'
-                    : 'w-1.5 bg-white/60 backdrop-blur-sm'
+                    ? 'w-3 bg-white shadow-md'
+                    : 'w-1 bg-white/60 backdrop-blur-sm'
                 }`}
               />
             ))}
@@ -122,19 +122,19 @@ const ProductCard = ({ product, onSelect, showB2BPrice = true }) => {
       </div>
 
       {/* Card Content Details */}
-      <div className="p-5 flex-1 flex flex-col">
+      <div className="p-3.5 flex-1 flex flex-col">
         <h3 
           onClick={() => onSelect && onSelect(product)}
-          className="text-lg font-bold text-gray-900 leading-tight mb-1 cursor-pointer hover:text-primary transition-colors truncate"
+          className="text-sm font-bold text-gray-900 leading-tight mb-1 cursor-pointer hover:text-primary transition-colors truncate"
         >
           {product.name}
         </h3>
-        <p className="text-sm text-gray-500 line-clamp-2 mb-4 flex-1">{product.description}</p>
+        <p className="text-xs text-gray-500 line-clamp-2 mb-3 flex-1">{product.description}</p>
         
         {/* Pricing Block */}
-        <div className="flex justify-between items-end mb-5">
+        <div className="flex justify-between items-end mb-3">
           <div>
-            <span className="text-2xl font-extrabold text-gray-900">${displayPrice?.toFixed(2)}</span>
+            <span className="text-lg font-extrabold text-gray-900">${displayPrice?.toFixed(2)}</span>
           </div>
         </div>
         
@@ -145,13 +145,13 @@ const ProductCard = ({ product, onSelect, showB2BPrice = true }) => {
             addToCart(product);
           }}
           disabled={isOutOfStock}
-          className={`w-full font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 ${
+          className={`w-full text-xs font-semibold py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 transition-all duration-200 ${
             isOutOfStock 
               ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
               : 'bg-primary hover:bg-primary-hover text-white shadow-[0_0_10px_rgba(37,99,235,0.2)] active:scale-[0.98]'
           }`}
         >
-          <ShoppingCart className="w-4 h-4" />
+          <ShoppingCart className="w-3.5 h-3.5" />
           <span>{isOutOfStock ? 'Sold Out' : 'Add to Cart'}</span>
         </button>
       </div>
