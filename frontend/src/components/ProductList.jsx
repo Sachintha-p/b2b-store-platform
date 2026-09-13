@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Package, Info, Search, Filter } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import api from '../api';
-import ProductDetailModal from './ProductDetailModal';
 import ProductCard from './ProductCard';
 
 const ProductList = () => {
+  const navigate = useNavigate();
   const { addToCart } = useCart();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -62,8 +62,7 @@ const ProductList = () => {
   }, [query, category, minPrice, maxPrice]);
 
   const openProduct = (product) => {
-    setSelectedProduct(product);
-    setIsModalOpen(true);
+    navigate(`/products/${product.id}`);
   };
 
   return (
@@ -175,13 +174,6 @@ const ProductList = () => {
           </div>
         )}
       </div>
-
-      <ProductDetailModal 
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        product={selectedProduct}
-        onSelectProduct={openProduct}
-      />
     </div>
   );
 };

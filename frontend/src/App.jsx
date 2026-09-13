@@ -1,5 +1,6 @@
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
 import ProductList from './components/ProductList'
+import ProductDetail from './components/ProductDetail'
 import Home from './components/Home'
 import CartOverlay from './components/CartOverlay'
 import AdminOrders from './components/AdminOrders'
@@ -70,6 +71,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<ProductList />} />
+          <Route path="/products/:id" element={<ProductDetail />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />

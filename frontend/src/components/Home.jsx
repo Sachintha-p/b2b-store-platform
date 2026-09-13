@@ -286,7 +286,7 @@ const Home = () => {
             <ProductCard
               key={product.id}
               product={product}
-              onSelect={() => navigate('/products')}
+              onSelect={() => navigate(`/products/${product.id}`)}
               showB2BPrice={false}
             />
           ))}

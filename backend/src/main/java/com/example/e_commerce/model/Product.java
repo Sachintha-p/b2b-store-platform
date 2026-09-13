@@ -46,6 +46,32 @@ public class Product {
     @jakarta.persistence.OrderBy("displayOrder ASC")
     private java.util.List<ProductImage> additionalImages = new java.util.ArrayList<>();
 
+    @jakarta.persistence.OneToMany(mappedBy = "product", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private java.util.List<Review> reviews = new java.util.ArrayList<>();
+
+    @com.fasterxml.jackson.annotation.JsonProperty("averageRating")
+    public Double getAverageRating() {
+        if (reviews == null || reviews.isEmpty()) {
+            return 0.0;
+        }
+        double sum = 0.0;
+        for (Review r : reviews) {
+            if (r.getRating() != null) {
+                sum += r.getRating();
+            }
+        }
+        double avg = sum / reviews.size();
+        return java.math.BigDecimal.valueOf(avg)
+                .setScale(1, java.math.RoundingMode.HALF_UP)
+                .doubleValue();
+    }
+
+    @com.fasterxml.jackson.annotation.JsonProperty("reviewCount")
+    public int getReviewCount() {
+        return reviews != null ? reviews.size() : 0;
+    }
+
 
     // Soft-delete: preserves order history integrity when a product is "deleted"
     private Boolean isArchived = false;

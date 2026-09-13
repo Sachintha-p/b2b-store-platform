@@ -70,6 +70,11 @@ public class SecurityConfig {
                 // Uploaded product images are served publicly
                 .requestMatchers("/uploads/**").permitAll()
 
+                // Review endpoints (must precede generic admin product write matchers)
+                .requestMatchers(HttpMethod.GET, "/api/products/*/reviews", "/api/products/*/reviews/summary").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/products/*/reviews").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/products/*/reviews/*").authenticated()
+
                 // 3. Admin-only endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
