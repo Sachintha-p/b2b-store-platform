@@ -21,6 +21,8 @@ public class OrderRequest {
     @NotBlank(message = "Shipping address is required")
     private String shippingAddress;
 
+    private String billingAddress;
+
     private String couponCode;
 
     @NotEmpty(message = "Order must contain at least one item")

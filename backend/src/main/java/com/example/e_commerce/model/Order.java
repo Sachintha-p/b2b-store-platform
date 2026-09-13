@@ -35,6 +35,8 @@ public class Order {
     @NotBlank(message = "Shipping address is mandatory")
     private String shippingAddress;
 
+    private String billingAddress;
+
     @Enumerated(EnumType.STRING)
     private OrderStatus status = OrderStatus.PENDING;
 

@@ -138,6 +138,12 @@ public class OrderController {
         order.setCustomerEmail(orderRequest.getEmail());
         order.setShippingAddress(orderRequest.getShippingAddress());
         
+        if (orderRequest.getBillingAddress() != null && !orderRequest.getBillingAddress().isBlank()) {
+            order.setBillingAddress(orderRequest.getBillingAddress());
+        } else {
+            order.setBillingAddress(orderRequest.getShippingAddress());
+        }
+        
         boolean isAdminUser = false;
         
         // Link to user if token is present

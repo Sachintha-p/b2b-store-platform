@@ -8,12 +8,22 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token') || null);
   const [loading, setLoading] = useState(false);
 
-  // When the app loads or token changes, restore user from localStorage
+  // Restore user from localStorage safely
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
-    if (storedUser && token) {
-      setUser(JSON.parse(storedUser));
-    } else {
+    const storedToken = localStorage.getItem('token');
+    if (storedUser && storedToken && storedUser !== 'undefined' && storedUser !== 'null') {
+      try {
+        setUser(JSON.parse(storedUser));
+        setToken(storedToken);
+      } catch (err) {
+        console.error('Failed to parse stored user from localStorage', err);
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        setUser(null);
+        setToken(null);
+      }
+    } else if (!storedToken) {
       setUser(null);
       setToken(null);
     }
@@ -40,19 +50,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Called by OAuth2RedirectHandler to log in with a JWT received from the backend
   const loginWithToken = useCallback(async (jwtToken) => {
     localStorage.setItem('token', jwtToken);
     setToken(jwtToken);
     
-    // Fetch user profile from backend using the token
     try {
       const response = await api.get('/auth/me', {
         headers: { Authorization: `Bearer ${jwtToken}` }
       });
       const userData = response.data;
-      localStorage.setItem('user', JSON.stringify(userData));
-      setUser(userData);
+      if (userData) {
+        localStorage.setItem('user', JSON.stringify(userData));
+        setUser(userData);
+      }
     } catch (error) {
       console.error('Failed to fetch user profile after OAuth login', error);
     }
@@ -87,8 +97,27 @@ export const AuthProvider = ({ children }) => {
     window.location.href = '/';
   };
 
+  const updateUser = (updatedUserData) => {
+    if (!updatedUserData) return;
+    localStorage.setItem('user', JSON.stringify(updatedUserData));
+    setUser(updatedUserData);
+  };
+
+  const fetchFreshUser = async () => {
+    if (!token) return;
+    try {
+      const response = await api.get('/auth/me');
+      if (response.data) {
+        updateUser(response.data);
+        return response.data;
+      }
+    } catch (err) {
+      console.error('Failed to refresh user profile', err);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, loginWithToken, register, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, loginWithToken, register, logout, updateUser, fetchFreshUser }}>
       {children}
     </AuthContext.Provider>
   );

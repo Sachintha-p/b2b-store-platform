@@ -60,6 +60,8 @@ public class PaymentController {
                     .setCancelUrl(cancelUrl)
                     .setClientReferenceId(order.getId().toString())
                     .setCustomerEmail(order.getCustomerEmail())
+                    .putMetadata("shipping_address", order.getShippingAddress() != null ? order.getShippingAddress() : "")
+                    .putMetadata("billing_address", order.getBillingAddress() != null ? order.getBillingAddress() : "")
                     .addLineItem(
                             SessionCreateParams.LineItem.builder()
                                     .setQuantity(1L)
