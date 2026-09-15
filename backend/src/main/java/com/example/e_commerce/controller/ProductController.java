@@ -6,6 +6,9 @@ import com.example.e_commerce.model.Product;
 import com.example.e_commerce.model.ProductImage;
 import com.example.e_commerce.repository.ProductImageRepository;
 import com.example.e_commerce.repository.ProductRepository;
+import com.example.e_commerce.repository.WishlistRepository;
+import com.example.e_commerce.util.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,7 +27,27 @@ public class ProductController {
     private final ProductRepository productRepository;
     private final ProductImageRepository productImageRepository;
     private final com.example.e_commerce.repository.CategoryRepository categoryRepository;
+    private final WishlistRepository wishlistRepository;
+    private final JwtUtil jwtUtil;
     private final Cloudinary cloudinary;
+
+    private void enrichProductsWithWishlist(List<Product> products, HttpServletRequest request) {
+        if (products == null || products.isEmpty() || request == null) return;
+
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            if (jwtUtil.validateToken(token)) {
+                Long userId = jwtUtil.extractUserId(token);
+                java.util.Set<Long> wishlistedIds = wishlistRepository.findProductIdsByUserId(userId);
+                for (Product p : products) {
+                    if (p != null && p.getId() != null) {
+                        p.setIsWishlisted(wishlistedIds.contains(p.getId()));
+                    }
+                }
+            }
+        }
+    }
 
     // ---- Public READ endpoints ----
 
@@ -35,7 +58,10 @@ public class ProductController {
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) String sort,
-            @RequestParam(required = false) Integer limit) {
+            @RequestParam(required = false) Integer limit,
+            HttpServletRequest request) {
+
+        List<Product> result;
 
         if ((query == null || query.isBlank()) &&
             (category == null || category.isBlank()) &&
@@ -43,27 +69,28 @@ public class ProductController {
             maxPrice == null) {
 
             if ("newest".equalsIgnoreCase(sort) && limit != null) {
-                return productRepository.findAll(
-                    org.springframework.data.domain.PageRequest.of(0, limit,
-                        org.springframework.data.domain.Sort.by(
-                            org.springframework.data.domain.Sort.Direction.DESC, "id")))
-                    .getContent()
+                result = productRepository.findAll(
+                    org.springframework.data.domain.Sort.by(
+                        org.springframework.data.domain.Sort.Direction.DESC, "id"))
                     .stream()
                     .filter(p -> !p.isArchived())
+                    .limit(limit)
                     .toList();
+            } else {
+                result = productRepository.findAll().stream()
+                        .filter(p -> !p.isArchived())
+                        .toList();
             }
-            // Return only non-archived products
-            return productRepository.findAll().stream()
-                    .filter(p -> !p.isArchived())
-                    .toList();
+        } else {
+            String formattedQuery = null;
+            if (query != null && !query.isBlank()) {
+                formattedQuery = query.trim().replaceAll("\\s+", " & ");
+            }
+            result = productRepository.searchProducts(formattedQuery, category, minPrice, maxPrice);
         }
 
-        String formattedQuery = null;
-        if (query != null && !query.isBlank()) {
-            formattedQuery = query.trim().replaceAll("\\s+", " & ");
-        }
-
-        return productRepository.searchProducts(formattedQuery, category, minPrice, maxPrice);
+        enrichProductsWithWishlist(result, request);
+        return result;
     }
 
     @GetMapping("/categories")
@@ -85,7 +112,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}/related")
-    public ResponseEntity<List<Product>> getRelatedProducts(@PathVariable Long id) {
+    public ResponseEntity<List<Product>> getRelatedProducts(@PathVariable Long id, HttpServletRequest request) {
         return productRepository.findById(id).map(product -> {
             if (product.getCategory() == null || product.getCategory().isBlank()) {
                 return ResponseEntity.ok(List.<Product>of());
@@ -94,14 +121,18 @@ public class ProductController {
             if (related.size() > 4) {
                 related = related.subList(0, 4);
             }
+            enrichProductsWithWishlist(related, request);
             return ResponseEntity.ok(related);
         }).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+    public ResponseEntity<Product> getProductById(@PathVariable Long id, HttpServletRequest request) {
         return productRepository.findById(id)
-                .map(ResponseEntity::ok)
+                .map(product -> {
+                    enrichProductsWithWishlist(List.of(product), request);
+                    return ResponseEntity.ok(product);
+                })
                 .orElse(ResponseEntity.notFound().build());
     }
 

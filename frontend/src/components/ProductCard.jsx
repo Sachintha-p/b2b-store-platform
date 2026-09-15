@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Package, ShoppingCart } from 'lucide-react';
+import { Package, ShoppingCart, Heart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 
 const ProductCard = ({ product, onSelect, showB2BPrice = true }) => {
   const { user } = useAuth();
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+  const wishlisted = isInWishlist(product.id) || product.isWishlisted;
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const intervalRef = useRef(null);
@@ -91,11 +94,25 @@ const ProductCard = ({ product, onSelect, showB2BPrice = true }) => {
         )}
 
         {/* Stock Status Badge */}
-        <span className={`absolute top-2 right-2 z-20 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm backdrop-blur ${
-          isOutOfStock ? 'bg-red-500/90 text-white' : 'bg-white/90 text-gray-700'
-        }`}>
-          {isOutOfStock ? 'Out of Stock' : `Stock: ${product.stockQuantity}`}
-        </span>
+        <div className="absolute top-2 right-2 z-20 flex items-center gap-1.5">
+          {user && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleWishlist(product.id);
+              }}
+              className="p-1.5 bg-white/90 backdrop-blur-sm rounded-full text-gray-600 hover:text-rose-500 shadow-sm transition-all hover:scale-110"
+              title={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+            >
+              <Heart className={`w-3.5 h-3.5 ${wishlisted ? 'fill-rose-500 text-rose-500' : 'text-gray-600'}`} />
+            </button>
+          )}
+          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm backdrop-blur ${
+            isOutOfStock ? 'bg-red-500/90 text-white' : 'bg-white/90 text-gray-700'
+          }`}>
+            {isOutOfStock ? 'Out of Stock' : `Stock: ${product.stockQuantity}`}
+          </span>
+        </div>
 
         {/* Category Badge */}
         {product.category ? (

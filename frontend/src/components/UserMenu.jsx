@@ -29,15 +29,7 @@ const UserMenu = () => {
   };
 
   if (!user) {
-    return (
-      <Link 
-        to="/login" 
-        className="text-primary/80 hover:text-primary transition-colors flex items-center gap-1"
-        title="Sign In"
-      >
-        <UserCircle className="w-6 h-6" />
-      </Link>
-    );
+    return null;
   }
 
   const getInitials = (name) => {

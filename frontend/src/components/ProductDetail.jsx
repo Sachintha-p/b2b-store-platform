@@ -15,17 +15,20 @@ import {
   Tag, 
   MessageSquare,
   Plus,
-  Send
+  Send,
+  Heart
 } from 'lucide-react';
 import api from '../api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useWishlist } from '../context/WishlistContext';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart, toggleCart } = useCart();
   const { user } = useAuth();
+  const { toggleWishlist, isInWishlist } = useWishlist();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -187,6 +190,7 @@ const ProductDetail = () => {
     : (product.imageUrl ? [product.imageUrl] : []);
 
   const isOutOfStock = product.stockQuantity === 0;
+  const wishlisted = product ? (isInWishlist(product.id) || product.isWishlisted) : false;
 
   return (
     <div className="max-w-7xl mx-auto space-y-12 pb-16">
@@ -274,11 +278,26 @@ const ProductDetail = () => {
               </span>
             </div>
 
-            {/* Price */}
-            <div className="pt-2">
+            {/* Price & Wishlist */}
+            <div className="pt-2 flex items-center justify-between">
               <span className="text-3xl font-extrabold text-gray-900">
                 ${product.retailPrice?.toFixed(2)}
               </span>
+              
+              {user && (
+                <button
+                  onClick={() => toggleWishlist(product.id)}
+                  className={`p-2.5 rounded-2xl border transition-all flex items-center justify-center gap-2.5 font-bold text-sm shadow-xs ${
+                    wishlisted
+                      ? 'bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100'
+                      : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-rose-500 hover:border-gray-300'
+                  }`}
+                  title={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                >
+                  <Heart className={`w-5 h-5 ${wishlisted ? 'fill-rose-500 text-rose-500' : 'text-gray-500 group-hover:text-rose-500'}`} />
+                  <span className="hidden sm:inline">{wishlisted ? 'Saved to Wishlist' : 'Add to Wishlist'}</span>
+                </button>
+              )}
             </div>
 
             {/* Description */}

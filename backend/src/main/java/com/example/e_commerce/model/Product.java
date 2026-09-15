@@ -73,6 +73,11 @@ public class Product {
     }
 
 
+    // Transient field for indicating if current authenticated user has wishlisted this product
+    @jakarta.persistence.Transient
+    @com.fasterxml.jackson.annotation.JsonProperty("isWishlisted")
+    private Boolean isWishlisted = false;
+
     // Soft-delete: preserves order history integrity when a product is "deleted"
     private Boolean isArchived = false;
 

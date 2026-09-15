@@ -44,7 +44,7 @@ const Home = () => {
         const [couponsRes, catsRes, prodsRes] = await Promise.all([
           api.get('/coupons/active'),
           api.get('/products/categories?limit=6'),
-          api.get('/products?sort=newest&limit=8')
+          api.get('/products?sort=newest&limit=5')
         ]);
         setActiveCoupons(couponsRes.data);
         setCategories(catsRes.data);
@@ -143,30 +143,11 @@ const Home = () => {
             Your Business Needs, <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">Our Global Marketplace</span>
           </h1>
-          <p className="text-gray-200 text-xs md:text-sm max-w-xl mb-4 font-medium drop-shadow-md">
+          <p className="text-gray-200 text-xs md:text-sm max-w-xl mb-6 font-medium drop-shadow-md">
             From everyday essentials to bulk business solutions — find everything you need, in one place.
             Sign up for an account to unlock special admin pricing.
           </p>
 
-          {/* SEARCH BAR */}
-          <form onSubmit={handleSearchSubmit} className="w-full max-w-md mb-5 relative">
-            <div className="relative flex items-center">
-              <Search className="absolute left-4 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search products, categories..."
-                className="w-full pl-11 pr-24 py-3 bg-white/90 backdrop-blur-md text-gray-900 placeholder-gray-500 rounded-full border border-white/20 shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm font-medium transition-all"
-              />
-              <button
-                type="submit"
-                className="absolute right-1.5 bg-primary hover:bg-primary-hover text-white text-xs font-bold px-4 py-2 rounded-full transition-all shadow-md active:scale-95"
-              >
-                Search
-              </button>
-            </div>
-          </form>
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto mb-5">
             <Link to="/products" className="bg-primary hover:bg-primary-hover text-white font-bold py-2.5 px-6 rounded-lg transition-all shadow-[0_0_15px_rgba(37,99,235,0.5)] hover:shadow-[0_0_25px_rgba(37,99,235,0.7)] flex items-center justify-center gap-2 text-sm">
               Shop Now <ArrowRight className="w-4 h-4" />
@@ -282,7 +263,7 @@ const Home = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {featuredProducts.map((product) => (
+          {featuredProducts.slice(0, 5).map((product) => (
             <ProductCard
               key={product.id}
               product={product}
